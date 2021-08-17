@@ -1,0 +1,33 @@
+/*----------Responsive Css Start----------*/
+
+@media only screen and (max-width :1199px) {}
+
+@media only screen and (min-width: 993px) and (max-width :1366px) {}
+@media only screen and (min-width: 993px) and (max-width :1199px) {  }
+
+@media only screen and (min-width: 768px) and (max-width :992px) {}
+
+@media only screen and (max-width: 767px) {
+    .register-img-box {
+        background-color: #e7f7f5;
+        padding: 30px;
+        height: auto;
+        min-height: 520px;
+    }
+
+}
+
+@media only screen and (min-width: 481px) and (max-width: 767px) {}
+
+@media only screen and (max-width: 480px) {
+    .register-img-box {
+        background-color: #e7f7f5;
+        padding: 30px;
+        height: auto;
+        min-height: 320px;
+    }
+    .register-text-box {
+        padding: 30px;
+        }
+
+}
