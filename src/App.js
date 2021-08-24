@@ -23,7 +23,7 @@ export default class App extends Component {
             <Route exact path='/' component={Register} />
             <Route path='/signin' component={SignIn} />
             <Route path='/register' component={Register} />
-            <CustomerRoutes path='/customer/services' component={CustomerServices} />
+            <Route path='/customer/services' component={CustomerServices} />
             <CustomerRoutes path='/customer/service/details' component={CustomerServiceDetails} />
 
             <AdminRoutes path='/admin/services' component={AdminServices} />

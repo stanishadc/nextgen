@@ -1,18 +1,217 @@
 /*----------Responsive Css Start----------*/
+.modal-lg, .modal-xl {
+    max-width: 710px;
+}
 
 @media only screen and (max-width :1199px) {}
 
 @media only screen and (min-width: 993px) and (max-width :1366px) {}
 @media only screen and (min-width: 993px) and (max-width :1199px) {  }
 
-@media only screen and (min-width: 768px) and (max-width :992px) {}
+@media only screen and (min-width: 768px) and (max-width :992px) {
+
+    .page-title-d h2 {
+        background-color: #E7F8F5;
+        padding: 10px 10px;
+        font-size: 15px;
+    }
+    .search-login-reg-box {
+        background-color: #fff;
+        margin-bottom: 6px;
+        float: left;
+        margin-right: 20px;
+    }
+  
+}
 
 @media only screen and (max-width: 767px) {
+
+    .start-header {
+        padding: 10px 0% 0px !important;
+    }
+  
+
     .register-img-box {
         background-color: #e7f7f5;
         padding: 30px;
         height: auto;
         min-height: 520px;
+    }
+
+    .banner-text-1 h1 {
+        font-weight: 900;
+        line-height: 40px;
+        font-size: 30px;
+    }
+    .page-banner {
+        padding: 30px 0px;
+    }
+    .banner-text-1 {
+        margin-bottom: 30px;
+    }
+
+    .col-mob  {       
+        flex-basis:unset;      
+        flex-grow:unset;
+        max-width: 100%;
+    }
+    .foot-section {
+        margin-bottom: 30px;
+    }
+    .footer-img {
+        width: 300px;
+    }
+    .follow-box {
+        float: left;
+    }
+    .pad60 {
+        padding: 30px 0px;
+    }
+    .title-page-1 {      
+        font-size: 26px;
+    }
+    .why-choose-info h3 {
+        font-size: 20px;
+    }
+    .our-service-1 h3 {
+        font-size: 20px;
+    }
+    .our-service-1 p {
+        font-size: 14px;
+    }
+    .footer-bg {
+        padding: 40px 0px 10px;
+    }
+    .why-choose-info p {
+        font-size: 16px;
+       
+    }
+    .search-login-reg-box {
+        background-color: #fff;
+        margin-bottom: 6px;
+        float: left;
+        margin-right: 20px;
+    }
+
+    .search-iput-btn {
+        font-size: 22px;
+
+    }
+    /* ============popup-design============= */
+    .title-box-popup {
+        display: block;
+        padding: 10px 10px;
+    }
+
+    .popup-body-box {
+        padding:  0px;
+        height: 360px;
+      
+    }
+    .user-msg {
+        width: 80%; 
+        margin-left: 40px;      
+    }
+    .msg-box {       
+        padding: 10px;
+    }
+    .msg-box p {
+        font-size: 11px;
+        line-height: 21px;
+    }
+    .user-img {
+        width: 30px;      
+        height: 30px;
+    }
+    .write-message-box {
+        padding: 0px 0px;
+        width: 100%;
+    }
+ 
+
+    button.close.close-btn-2 {
+        top: -30px;     
+        right: 0px;
+        font-size: 22px;
+      
+    }
+
+    .main-page {      
+        padding: 20px 0px;
+            margin-left: 0px;
+    }
+
+    .page-title-d h2 {
+       
+        padding: 10px 20px;
+        font-size: 15px;
+        text-align: center;
+    }
+
+    .page-title-d h2 img {
+        width: 18px;
+        margin-right: 10px;
+        /* display: block;
+        margin: 3px auto; */
+    }
+
+          
+    a.conversation-btn {
+        border: 2px solid #13b59c;
+        font-weight: 700;
+        color: #13b59c;
+        border-radius: 4px;
+        padding: 7px 15px;
+        font-size: 100%;
+        float: unset;
+        text-align: center;
+        display: block;
+        margin: 10px auto 0px;
+        max-width: 170px;
+    }
+    .table.document-table td {
+        font-size: 13px;
+    }
+    .table.document-table th {      
+        font-size: 13px;
+        line-height: 19px;
+    }
+
+
+    .table.document-table img {
+        width: 20px;
+    }
+    .page-title-d {
+        text-align: center;
+    }
+    #sidebar{      
+        left:-80px;
+    }
+    .side-menu-btn-3{
+        display: block;
+    }
+
+    .breadcrum-1 ul li {
+        display: inline-block;
+        font-size: 12px;
+    }
+    .showing-entries {       
+        text-align: center;
+    }
+
+    .pagination-list-box {
+        padding: 5px;
+    }
+    .list-box-p {
+        float: unset;
+        margin: 0px auto;
+        display: table;        
+    }
+    .start-header .navbar-light .navbar-brand {     
+        margin: 0px 5px;
+    }
+    #Search-box-hide {
+        margin: 0px !important;
     }
 
 }
@@ -29,5 +228,14 @@
     .register-text-box {
         padding: 30px;
         }
+        .title-page-1 {
+            font-size: 24px;
+        }
 
+        .search-hide-btn {           
+            right: 0px;
+            top: -30px;
+        }   
 }
+
+
