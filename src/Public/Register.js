@@ -1,7 +1,59 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'
 import { Link } from 'react-router-dom';
+const initialLoginValues = {
+    email: '',
+    password: '',
+    name: ''
+}
 export default function Register(props) {
+    const [values, setValues] = useState(initialLoginValues)
+    const [errors, setErrors] = useState({})
+    const applyErrorClass = field => ((field in errors && errors[field] == false) ? 'form-control-danger' : '')
+    const applicationAPI = (url = "http://backend-application-174028158.ap-south-1.elb.amazonaws.com/api/auth/") => {
+        return {
+            checkLogin: newRecord => axios.post(url + "signup", newRecord)
+        }
+    }
+    const handleInputChange = e => {
+        const { name, value } = e.target;
+        setValues({
+            ...values,
+            [name]: value
+        })
+    }
+    const validate = () => {
+        let temp = {}
+        temp.email = values.email == "" ? false : true;
+        temp.password = values.password == "" ? false : true;
+        setErrors(temp)
+        return Object.values(temp).every(x => x == true)
+    }
+    const checkUser = (loginData) => {
+        applicationAPI().checkLogin(loginData)
+            .then(res => {
+                if (res.data.success === true) {
+                    console.log(res.data.message);
+                    props.history.push({
+                        pathname: '/customer/services',
+                    })
+                }
+            })
+            .catch(function (error) {
+                if (error.response) {
+                    console.log(error.response.data.message);
+                }
+            })
+    }
+    const handleSubmit = e => {
+        e.preventDefault();
+        if (validate()) {
+            initialLoginValues.email = values.email
+            initialLoginValues.password = values.password
+            initialLoginValues.name = "Test"
+            checkUser(initialLoginValues)
+        }
+    }
     return (
         <div>
             <div className="register-page">
@@ -23,14 +75,14 @@ export default function Register(props) {
                         </div>
                         <div className="form-box row">
                             <div className="col-lg-6 offset-lg-3">
-                                <form>
+                                <form onSubmit={handleSubmit} autoComplete="off" noValidate>
                                     <div className="form-group">
                                         <label className="input-validate" htmlFor="email">Email</label>
-                                        <input type="email" className="form-control input-trigger" id="email" placeholder="Enter Email" name="email" />
+                                        <input className={"form-control input-trigger" + applyErrorClass('email')} name="email" type="email" id="email" value={values.email} onChange={handleInputChange} placeholder="Enter Email" />
                                     </div>
                                     <div className="form-group mart20">
                                         <label className="input-validate" htmlFor="pwd">Create Password</label>
-                                        <input type="password" className="form-control input-trigger" id="pwd" placeholder="Password of 6-8 characters" name="pswd" />
+                                        <input className={"form-control input-trigger" + applyErrorClass('password')} id="pwd" name="password" type="password" value={values.password} onChange={handleInputChange} placeholder="Password of 6-8 characters" />
                                     </div>
                                     <button type="submit" className="btn create-account-btn">Create Account</button>
                                 </form>
