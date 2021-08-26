@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import config from '../config';
 import axios from 'axios'
 import { Link } from 'react-router-dom';
+import { handleSuccess, handleError } from '../Common/CustomAlerts'
 const initialLoginValues = {
     email: '',
     password: ''
@@ -8,8 +10,8 @@ const initialLoginValues = {
 export default function SignIn(props) {
     const [values, setValues] = useState(initialLoginValues)
     const [errors, setErrors] = useState({})
-    const applyErrorClass = field => ((field in errors && errors[field] == false) ? 'form-control-danger' : '')
-    const applicationAPI = (url = "http://backend-application-174028158.ap-south-1.elb.amazonaws.com/api/auth/") => {
+    const applyErrorClass = field => ((field in errors && errors[field] == false) ? ' form-control-danger' : '')
+    const applicationAPI = (url = config.url) => {
         return {
             checkLogin: newRecord => axios.post(url + "login", newRecord)
         }
@@ -31,6 +33,7 @@ export default function SignIn(props) {
     const checkUser = (loginData) => {
         applicationAPI().checkLogin(loginData)
             .then(res => {
+                handleSuccess("Login Success");
                 localStorage.setItem('userToken', res.data.accessToken);
                 props.history.push({
                     pathname: '/customer/services',
@@ -38,20 +41,19 @@ export default function SignIn(props) {
             })
             .catch(function (error) {
                 if (error.response) {
-                  console.log(error.response.data.message);
+                    handleError(error.response.data.message);
                 }
             })
     }
     const handleSubmit = e => {
         e.preventDefault();
         if (validate()) {
-            try {
                 initialLoginValues.email = values.email
                 initialLoginValues.password = values.password
                 checkUser(initialLoginValues)
-            } catch (err) {
-                //console.log("error" + err);
-            }
+        }
+        else{
+            handleError("All fields are mandatory");
         }
     }
     return (
@@ -68,23 +70,23 @@ export default function SignIn(props) {
                             <Link to={"/signin"} className="active">Sign In</Link>
                         </div>
                         <a className="register-google-btn">
-                            <img src="images/google-icon.png" style={{ width: 25, marginRight: 10 }} /> Register with Google
+                            <img src="images/google-icon.png" style={{ width: 25, marginRight: 10 }} /> Sign In with Google
                         </a>
                         <div className="signup-email">
-                            <p className>Or Sign Up with email</p>
+                            <p className>Or Sign In with email</p>
                         </div>
                         <div className="form-box row">
                             <div className="col-lg-6 offset-lg-3">
                             <form onSubmit={handleSubmit} autoComplete="off" noValidate>
                                     <div className="form-group">
                                         <label className="input-validate" htmlFor="email">Email</label>
-                                        <input className={"form-control input-trigger" + applyErrorClass('email')} name="email" type="email" id="email" value={values.email} onChange={handleInputChange} placeholder="Enter your registered Email ID" />
+                                        <input className={"form-control" + applyErrorClass('email')} name="email" type="email" id="email" value={values.email} onChange={handleInputChange} placeholder="Enter your registered Email ID" />
                                     </div>
                                     <div className="form-group mart20">
                                         <label className="input-validate" htmlFor="pwd">Password</label>
-                                        <input className={"form-control input-trigger" + applyErrorClass('password')} id="pwd" name="password" type="password" value={values.password} onChange={handleInputChange} placeholder="Enter Password" />
+                                        <input className={"form-control" + applyErrorClass('password')} id="pwd" name="password" type="password" value={values.password} onChange={handleInputChange} placeholder="Enter Password" />
                                     </div>
-                                    <button type="submit" className="btn disabled-btn create-account-btn">Sign In</button>
+                                    <button type="submit" className="btn create-account-btn">Sign In</button>
                                     <a href="#" className="forgot-pass">Forgot Password?</a>
                                 </form>
                             </div>

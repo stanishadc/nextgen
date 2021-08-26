@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import config from '../config';
 import axios from 'axios'
 import { Link } from 'react-router-dom';
+import { handleSuccess, handleError } from '../Common/CustomAlerts'
 const initialLoginValues = {
     email: '',
     password: '',
@@ -9,8 +11,8 @@ const initialLoginValues = {
 export default function Register(props) {
     const [values, setValues] = useState(initialLoginValues)
     const [errors, setErrors] = useState({})
-    const applyErrorClass = field => ((field in errors && errors[field] == false) ? 'form-control-danger' : '')
-    const applicationAPI = (url = "http://backend-application-174028158.ap-south-1.elb.amazonaws.com/api/auth/") => {
+    const applyErrorClass = field => ((field in errors && errors[field] == false) ? ' form-control-danger' : '')
+    const applicationAPI = (url = config.url) => {
         return {
             checkLogin: newRecord => axios.post(url + "signup", newRecord)
         }
@@ -33,7 +35,7 @@ export default function Register(props) {
         applicationAPI().checkLogin(loginData)
             .then(res => {
                 if (res.data.success === true) {
-                    console.log(res.data.message);
+                    handleSuccess(res.data.message);
                     props.history.push({
                         pathname: '/customer/services',
                     })
@@ -41,7 +43,7 @@ export default function Register(props) {
             })
             .catch(function (error) {
                 if (error.response) {
-                    console.log(error.response.data.message);
+                    handleError(error.response.data.message);
                 }
             })
     }
@@ -52,6 +54,9 @@ export default function Register(props) {
             initialLoginValues.password = values.password
             initialLoginValues.name = "Test"
             checkUser(initialLoginValues)
+        }
+        else{
+            handleError("All fields are mandatory");
         }
     }
     return (
@@ -78,7 +83,7 @@ export default function Register(props) {
                                 <form onSubmit={handleSubmit} autoComplete="off" noValidate>
                                     <div className="form-group">
                                         <label className="input-validate" htmlFor="email">Email</label>
-                                        <input className={"form-control input-trigger" + applyErrorClass('email')} name="email" type="email" id="email" value={values.email} onChange={handleInputChange} placeholder="Enter Email" />
+                                        <input className={"form-control" + applyErrorClass('email')} name="email" type="email" id="email" value={values.email} onChange={handleInputChange} placeholder="Enter Email" />
                                     </div>
                                     <div className="form-group mart20">
                                         <label className="input-validate" htmlFor="pwd">Create Password</label>
