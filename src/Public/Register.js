@@ -12,9 +12,9 @@ export default function Register(props) {
     const [values, setValues] = useState(initialLoginValues)
     const [errors, setErrors] = useState({})
     const applyErrorClass = field => ((field in errors && errors[field] == false) ? ' form-control-danger' : '')
-    const applicationAPI = (url = config.url) => {
+    const applicationAPI = () => {
         return {
-            checkLogin: newRecord => axios.post(url + "signup", newRecord)
+            checkLogin: newRecord => axios.post(config.api + config.userregister, newRecord)
         }
     }
     const handleInputChange = e => {

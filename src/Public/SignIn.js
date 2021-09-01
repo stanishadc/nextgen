@@ -11,9 +11,9 @@ export default function SignIn(props) {
     const [values, setValues] = useState(initialLoginValues)
     const [errors, setErrors] = useState({})
     const applyErrorClass = field => ((field in errors && errors[field] == false) ? ' form-control-danger' : '')
-    const applicationAPI = (url = config.url) => {
+    const applicationAPI = () => {
         return {
-            checkLogin: newRecord => axios.post(url + "login", newRecord)
+            checkLogin: newRecord => axios.post(config.apiurl + config.usersignin, newRecord)
         }
     }
     const handleInputChange = e => {
@@ -36,7 +36,7 @@ export default function SignIn(props) {
                 handleSuccess("Login Success");
                 localStorage.setItem('userToken', res.data.accessToken);
                 props.history.push({
-                    pathname: '/customer/services',
+                    pathname: '/users/services',
                 })
             })
             .catch(function (error) {

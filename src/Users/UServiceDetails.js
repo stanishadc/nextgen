@@ -1,18 +1,13 @@
 import React, { useState, useEffect } from "react";
 import config from "../config";
 import axios from "axios";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Sidebar from "../Common/Sidebar";
 import moment from "moment";
 import { handleSuccess, handleError } from "../Common/CustomAlerts";
-import conversation from "../Common/Conversation";
-export default function AServiceDetails(props) {
-  const history = useHistory();
-  const [isOpen, setIsOpen] = useState(false);
+export default function UServiceDetails(props) {
   const [servicesList, setServicesList] = useState([]);
   const [serviceId, setServiceId] = useState([]);
-  const [userName, setUserName] = useState([]);
-  const [serviceName, setServiceName] = useState([]);
   const applicationAPI = () => {
     const headerconfig = {
       headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
@@ -22,32 +17,18 @@ export default function AServiceDetails(props) {
         axios.get(config.apiurl + config.userservices, headerconfig),
     };
   };
-  const togglePopup = () => {
-    setIsOpen(!isOpen);
-  };
   function refreshServicesList() {
     var m = window.location.pathname.split("/");
     setServiceId(m[4]);
     applicationAPI()
       .fetchAll()
-      .then(
-        (res) => (
-          setServicesList(res.data),
-          setUserName(res.data[0].userName),
-          setServiceName(res.data[0].serviceName)
-        )
-      )
+      .then((res) => setServicesList(res.data))
       .catch(function (error) {
         if (error.response) {
           handleError(error.response.data.message);
         }
       });
   }
-  const checkConversation = () => {
-    {
-      togglePopup();
-    }
-  };
   useEffect(() => {
     refreshServicesList();
   }, []);
@@ -104,7 +85,7 @@ export default function AServiceDetails(props) {
                         src="/images/user-icon.png"
                         alt
                         style={{ width: 20 }}
-                      />
+                      />{" "}
                       Account
                     </a>
                   </div>
@@ -118,7 +99,8 @@ export default function AServiceDetails(props) {
             <div className="row">
               <div className="col-md-8 offset-md-2">
                 <button id="Search-hide" className="search-hide-btn">
-                  X
+                  {" "}
+                  X{" "}
                 </button>
                 <div className="search-iput">
                   <input
@@ -147,31 +129,32 @@ export default function AServiceDetails(props) {
                       <a href="#"> My Dashboard </a> &gt;
                     </li>
                     <li>
-                      <a href="#">&nbsp;My Customers</a> &gt;
+                      <a href="#">&nbsp;Applied Services </a> &gt;
                     </li>
-                    <li>&nbsp;Services Applied </li>
+                    <li>&nbsp;Limited Liability Partnership </li>
                   </ul>
                 </div>
               </div>
               <div className="clearfix pad30" />
               <div className="col-md-8">
                 <div className="page-title-d">
-                  <h2>
-                    <img src="/images/file-icon.png" />
-                    <span className="font-avenir-bold">{userName}</span>
-                    <p style={{ color: "#8C8D95" }}>
-                      Service applied for: {serviceName}
-                    </p>
+                  <h2 className="font-avenir-bold">
+                    {" "}
+                    <img src="/images/file-icon.png" />{" "}
+                    <span> LIMITED LIABILITY PARTNERSHIP</span>
                   </h2>
                 </div>
               </div>
-              <div className="col-md-4 admin-btn">
-                <Link className="conversation-btn" onClick={checkConversation}>
+              <div className="col-md-4">
+                <a
+                  data-toggle="modal"
+                  data-target="#Conversation_modal"
+                  href="#"
+                  className="conversation-btn"
+                >
+                  {" "}
                   <img src="/images/comments.png" /> Conversation
-                </Link>
-                <Link className="assign-btn">
-                  <img src="/images/comments.png" /> Assign
-                </Link>
+                </a>
               </div>
             </div>
             <div className="clearfix" />
@@ -188,50 +171,48 @@ export default function AServiceDetails(props) {
                         </th>
                         <th scope="col">Date Applied</th>
                         <th scope="col" style={{ width: "12%" }}>
+                          {" "}
                           Actions
                         </th>
                       </tr>
                     </thead>
-                    {servicesList &&
-                      servicesList
-                        .filter((servicesList) => servicesList.id == serviceId)
-                        .map((documentList) => (
-                          <tbody key={documentList.id}>
-                            {documentList.documents.map((document, index) => (
-                              <tr>
-                                <td scope="row" key={document.id}>
-                                  {index + 1}
-                                </td>
-                                <td>{document.documentId}</td>
-                                <td>
-                                  <a href="#">
-                                    <img src="/images/download-icon.png" />{" "}
-                                    <span
-                                      style={{ textDecoration: "underline" }}
-                                    >
-                                      {document.name}
-                                    </span>
-                                  </a>
-                                </td>
-                                <td>12 Jun 2021</td>
-                                <td>
-                                  <button>
-                                    <img src="/images/view-icon.png" />
-                                  </button>
-                                  <button>
-                                    <img src="/images/download-icon.png" />
-                                  </button>
-                                  <button disabled>
-                                    <img
-                                      src="/images/edit-icon.png"
-                                      className="disabled-icon"
-                                    />
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        ))}
+                    {servicesList && servicesList
+                      .filter((servicesList) => servicesList.id == serviceId)
+                      .map((documentList) => (
+                        <tbody key={documentList.id}>
+                          {documentList.documents.map((document, index) => (
+                            <tr>
+                              <td scope="row" key={document.id}>
+                                {index + 1}
+                              </td>
+                              <td>{document.documentId}</td>
+                              <td>
+                                <a href="#">
+                                  <img src="/images/download-icon.png" />{" "}
+                                  <span style={{ textDecoration: "underline" }}>
+                                    {document.name}
+                                  </span>
+                                </a>
+                              </td>
+                              <td>12 Jun 2021</td>
+                              <td>
+                                <button>
+                                  <img src="/images/view-icon.png" />
+                                </button>
+                                <button>
+                                  <img src="/images/download-icon.png" />
+                                </button>
+                                <button disabled>
+                                  <img
+                                    src="/images/edit-icon.png"
+                                    className="disabled-icon"
+                                  />
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      ))}
                   </table>
                 </div>
               </div>
@@ -304,7 +285,6 @@ export default function AServiceDetails(props) {
           </div>
         </div>
       </div>
-      {isOpen && <conversation handleClose={togglePopup} />}
     </div>
   );
 }

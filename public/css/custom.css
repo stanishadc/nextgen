@@ -11,6 +11,7 @@
 }
 .font-avenir-bold {
     font-family: Avenir-bold;
+    text-transform: uppercase;
 }
 .register-img-box{
     background-color: #e7f7f5;
@@ -619,7 +620,15 @@ input:focus + label {
     padding: 0.5% 1.5%;
     font-size: 100%;
 } */
-
+a.assign-btn {
+    border: 2px solid #13b59c;  
+    font-weight: 700;
+    color: #13b59c;
+    border-radius: 4px;
+    padding: 0.5% 1.5%;
+    font-size: 100%;
+    float: right;
+}
 a.conversation-btn {
     border: 2px solid #13b59c;  
     font-weight: 700;
@@ -628,14 +637,18 @@ a.conversation-btn {
     padding: 0.5% 1.5%;
     font-size: 100%;
     float: right;
-    
-
+    margin-left: 10px;
+}
+a.assign-btn img {
+    width: 21px;
+    margin-right: 5px;
 }
 
 a.conversation-btn img {
     width: 21px;
     margin-right: 5px;
 }
+
 button.close.close-btn-2 {
     top: -25px;
     position: absolute;
@@ -841,7 +854,14 @@ button.submit-btn-msg img {
 .table.document-table a{
     color: #13B59C;  
 }
-
+.table.document-table a.view-btn {
+    border: 2px solid #13b59c; 
+    background-color: #13b59c; 
+    color: #ffffff;
+    border-radius: 4px;
+    padding: 2px 7px 2px 7px;
+    font-size: 100%;
+}
 .table.document-table img {
     width: 23px;
     vertical-align: middle;
