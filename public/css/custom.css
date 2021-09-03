@@ -11,7 +11,6 @@
 }
 .font-avenir-bold {
     font-family: Avenir-bold;
-    text-transform: uppercase;
 }
 .register-img-box{
     background-color: #e7f7f5;
@@ -112,10 +111,6 @@
     font-size: 14px;
     font-weight: 400;
 }
-.form-control-danger
-{
-    border-color: #b51313 !important;
-}
 .form-box input {
     border: 1px solid #ccc;
     color: #1C1C1C;
@@ -137,7 +132,6 @@ input:focus + label {
     -webkit-box-shadow: none;
     box-shadow: none;
 }
-
 .create-account-btn{
     margin-top: 30px;
     padding: 12px;
@@ -620,35 +614,28 @@ input:focus + label {
     padding: 0.5% 1.5%;
     font-size: 100%;
 } */
-a.assign-btn {
-    border: 2px solid #13b59c;  
-    font-weight: 700;
-    color: #13b59c;
-    border-radius: 4px;
-    padding: 0.5% 1.5%;
-    font-size: 100%;
-    float: right;
-}
+
 a.conversation-btn {
     border: 2px solid #13b59c;  
     font-weight: 700;
     color: #13b59c;
     border-radius: 4px;
-    padding: 0.5% 1.5%;
+    padding: 5px 15px;
     font-size: 100%;
-    float: right;
+    /* float: right; */
     margin-left: 10px;
 }
-a.assign-btn img {
-    width: 21px;
-    margin-right: 5px;
+
+a.conversation-btn.active {
+    background-color:  #13b59c;
+    color: #fff;
+
 }
 
 a.conversation-btn img {
     width: 21px;
     margin-right: 5px;
 }
-
 button.close.close-btn-2 {
     top: -25px;
     position: absolute;
@@ -832,7 +819,7 @@ button.submit-btn-msg img {
 .breadcrum-1 ul li {
     display: inline-block;
     font-size: 14px;
-    color: #7b7b7b;
+    color: #666;
 }
 .breadcrum-1 ul li a {
     color: #13b59c;
@@ -854,14 +841,7 @@ button.submit-btn-msg img {
 .table.document-table a{
     color: #13B59C;  
 }
-.table.document-table a.view-btn {
-    border: 2px solid #13b59c; 
-    background-color: #13b59c; 
-    color: #ffffff;
-    border-radius: 4px;
-    padding: 2px 7px 2px 7px;
-    font-size: 100%;
-}
+
 .table.document-table img {
     width: 23px;
     vertical-align: middle;
@@ -881,7 +861,7 @@ button.submit-btn-msg img {
 }
 
 .table.document-table td{
-    font-size: 14px;
+    font-size: 16px;
    
 }
 
@@ -970,3 +950,118 @@ button:focus{outline: none;}
         display: block;
         border-radius:17px;
     }
+
+
+    .assigned-box {
+        padding: 20px;
+    }
+
+    .assigned-box h5 {
+        font-size: 24px;
+        margin-bottom: 20px;
+        font-weight: 700;
+    }
+    .search-assign{
+        margin-bottom: 30px;
+
+    }
+    .search-assign input {
+        padding: 20px !important;
+    }
+
+    .search-assign button.input-group-text {
+        background-color: transparent;
+        color: #13b59c;
+        font-size: 24px;
+    }
+
+
+    /* ================= */
+
+  
+/* CUSTOM RADIO & CHECKBOXES
+   http://stackoverflow.com/a/17541916/383904 */
+
+   .radio-btn-assigned-box{}
+   .radio-btn-assigned-box label {
+    display: block;
+}
+
+.radio-btn-assigned-box label {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.rad {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.rad > input
+{ /* HIDE ORG RADIO & CHECKBOX */
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+/* RADIO & CHECKBOX STYLES */
+/* DEFAULT <i> STYLE */
+.rad > i
+{ 
+    display: inline-block;
+    vertical-align: middle;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    transition: 0.2s;
+    box-shadow: inset 0 0 0 3px #fff;
+    border: 1px solid #999;
+    background: #999;
+}
+
+.rad:hover > i{ /* HOVER <i> STYLE */
+  box-shadow: inset 0 0 0 3px #fff;
+  background: #13b59c;
+  border: 1px solid #13b59c;
+}
+.rad > input:checked + i{ /* (RADIO CHECKED) <i> STYLE */
+  box-shadow: inset 0 0 0 3px #fff;
+  background: #13b59c;
+  border: 1px solid #13b59c;
+}
+
+.radio-btn-assigned-box img {
+    width: 30px;
+    margin: 0px 10px;
+}
+
+
+.assign-btn-popup{
+
+}
+
+.assign-btn-popup {
+    background-color: #13b59c;
+    font-size: 16px;
+    padding: 8px 30px;
+    color: #fff;
+}
+
+
+.assign-btn-popup-cancel {
+    font-size: 16px;
+    padding: 8px 30px;
+    color: #666 !important;
+    font-weight: 700;
+    
+}
+.assign-btn-popup {
+    background-color: #13b59c;
+    font-size: 16px;
+    padding: 8px 30px;
+    color: #fff !important;
+    margin-left: 15px;
+    font-weight: 700;
+}

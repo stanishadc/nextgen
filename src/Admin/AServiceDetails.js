@@ -4,10 +4,9 @@ import axios from "axios";
 import { Link, useHistory } from "react-router-dom";
 import Sidebar from "../Common/Sidebar";
 import moment from "moment";
-import { handleSuccess, handleError } from "../Common/CustomAlerts";
-import conversation from "../Common/Conversation";
+import { handleError } from "../Common/CustomAlerts";
 import Header from "../Common/Header";
-
+import ConversationModal from "../Common/ConversationModal";
 export default function AServiceDetails(props) {
   const history = useHistory();
   const [isOpen, setIsOpen] = useState(false);
@@ -90,8 +89,8 @@ export default function AServiceDetails(props) {
                 <Link className="conversation-btn" onClick={checkConversation}>
                   <img src="/images/comments.png" /> Conversation
                 </Link>
-                <Link className="assign-btn">
-                  <img src="/images/comments.png" /> Assign
+                <Link className="conversation-btn active">
+                  <img src="/images/checked.png" /> Assign
                 </Link>
               </div>
             </div>
@@ -219,7 +218,7 @@ export default function AServiceDetails(props) {
           </div>
         </div>
       </div>
-      {isOpen && <conversation handleClose={togglePopup} />}
+      {isOpen && <ConversationModal handleClose={togglePopup} />}
     </div>
   );
 }

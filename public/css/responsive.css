@@ -214,6 +214,14 @@
         margin: 0px !important;
     }
 
+    .assigned-box {
+        padding: 10px;
+    }
+    .assigned-box h5 {
+        font-size: 20px;
+    }
+
+
 }
 
 @media only screen and (min-width: 481px) and (max-width: 767px) {}
@@ -235,7 +243,20 @@
         .search-hide-btn {           
             right: 0px;
             top: -30px;
-        }   
+        }  
+        .assigned-box {
+            padding: 0px;
+        }
+        .radio-btn-assigned-box {
+            /* margin-bottom: 20px; */
+            /* border-bottom: 1px solid #ccc; */
+        }
+        
+        .search-assign input {
+         
+            font-size: 13px;
+        }
+
 }
 
 

@@ -4,9 +4,9 @@ import axios from "axios";
 import { Link, useHistory } from "react-router-dom";
 import Sidebar from "../Common/Sidebar";
 import moment from "moment";
-import { handleSuccess, handleError } from "../Common/CustomAlerts";
-import conversation from "../Common/Conversation";
+import { handleError } from "../Common/CustomAlerts";
 import Header from "../Common/Header";
+import ConversationModal from "../Common/ConversationModal";
 
 export default function EServiceDetails(props) {
   const history = useHistory();
@@ -216,7 +216,7 @@ export default function EServiceDetails(props) {
           </div>
         </div>
       </div>
-      {isOpen && <conversation handleClose={togglePopup} />}
+      {isOpen && <ConversationModal handleClose={togglePopup} />}
     </div>
   );
 }
