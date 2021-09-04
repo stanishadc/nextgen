@@ -1,6 +1,6 @@
 /*----------Responsive Css Start----------*/
 .modal-lg, .modal-xl {
-    max-width: 710px;
+    /*max-width: 710px;*/
 }
 
 @media only screen and (max-width :1199px) {}

@@ -27,10 +27,10 @@ export default class App extends Component {
             <UserRoutes path='/users/service/details/:id' component={UserServiceDetails} />
 
             <AdminRoutes path='/admin/services' component={AdminServices} />
-            <AdminRoutes path='/admin/service/details' component={AdminServiceDetails} />
+            <AdminRoutes path='/admin/service/details/:id' component={AdminServiceDetails} />
 
             <ExecutiveRoutes path='/executive/services' component={ExecutiveServices} />
-            <ExecutiveRoutes path='/executive/service/details' component={ExecutiveServiceDetails} />
+            <ExecutiveRoutes path='/executive/service/details/:id' component={ExecutiveServiceDetails} />
           </Switch>
         </Router>
       </div>

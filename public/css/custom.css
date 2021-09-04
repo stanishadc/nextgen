@@ -767,7 +767,7 @@ button.close.close-btn-2 {
     overflow: hidden;
 }
 .user-msg {
-    width: 65%;
+    /*width: 65%;*/
     float: left;
     margin-left: 55px;
 }
