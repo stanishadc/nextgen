@@ -60,15 +60,9 @@ export default function AServices(props) {
                 </div>
               </div>
               <div className="col-md-4">
-                <a
-                  data-toggle="modal"
-                  data-target="#Conversation_modal"
-                  href="#"
-                  className="conversation-btn"
-                >
-                  {" "}
+                <Link to="/" className="sort-btn">
                   <img src="/images/comments.png" /> Sort By
-                </a>
+                </Link>
               </div>
             </div>
             <div className="clearfix" />
@@ -100,7 +94,22 @@ export default function AServices(props) {
                             <td>
                               {moment(service.createdAt).format("DD MMM YYYY")}
                             </td>
-                            <td>{service.status}</td>
+                            <td>
+                            {service.status==="NEW" ?
+                            <span className="status-primary">{service.status}</span>
+                            :
+                            service.status==="PENDING" ?
+                            <span className="status-warning">{service.status}</span>
+                            :
+                            service.status==="APPROVED" ?
+                            <span className="status-success">{service.status}</span>
+                            :
+                            service.status==="REJECTED" ?
+                            <span className="status-danger">{service.status}</span>
+                            :
+                            <span>{service.status}</span>
+                            }
+                            </td>
                             <td>
                               <Link
                                 to={"/admin/service/details/" + service.id}

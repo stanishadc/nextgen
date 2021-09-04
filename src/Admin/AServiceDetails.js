@@ -7,9 +7,12 @@ import moment from "moment";
 import { handleError } from "../Common/CustomAlerts";
 import Header from "../Common/Header";
 import ConversationModal from "../Common/ConversationModal";
+import ExecutiveModal from "../Common/ExecutiveModal";
+
 export default function AServiceDetails(props) {
   const history = useHistory();
   const [isOpen, setIsOpen] = useState(false);
+  const [isEOpen, setIsEOpen] = useState(false);
   const [servicesList, setServicesList] = useState([]);
   const [serviceId, setServiceId] = useState([]);
   const [userName, setUserName] = useState([]);
@@ -25,6 +28,9 @@ export default function AServiceDetails(props) {
   };
   const togglePopup = () => {
     setIsOpen(!isOpen);
+  };
+  const toggleEPopup = () => {
+    setIsEOpen(!isOpen);
   };
   function refreshServicesList() {
     var m = window.location.pathname.split("/");
@@ -47,6 +53,11 @@ export default function AServiceDetails(props) {
   const checkConversation = () => {
     {
       togglePopup();
+    }
+  };
+  const assignExecutive = () => {
+    {
+      toggleEPopup();
     }
   };
   useEffect(() => {
@@ -89,7 +100,7 @@ export default function AServiceDetails(props) {
                 <Link className="conversation-btn" onClick={checkConversation}>
                   <img src="/images/comments.png" /> Conversation
                 </Link>
-                <Link className="conversation-btn active">
+                <Link className="conversation-btn active" onClick={assignExecutive}>
                   <img src="/images/checked.png" /> Assign
                 </Link>
               </div>
@@ -218,7 +229,8 @@ export default function AServiceDetails(props) {
           </div>
         </div>
       </div>
-      {isOpen && <ConversationModal handleClose={togglePopup} />}
+      {isOpen && <ConversationModal handleClose={togglePopup} userServiceId={serviceId}/>}
+      {isEOpen && <ExecutiveModal handleEClose={toggleEPopup} />}
     </div>
   );
 }

@@ -3,5 +3,11 @@ module.exports={
     apiurl:'https://api.genext.virtualitetech.com/api/',
     usersignin:'auth/login',
     userregister:'auth/signup',
-    userservices:'user/services'
+    userservices:'user/services',
+    executives:'user/executives',
+    fileupload:'user/services/',
+    filedownload:'user/services/',
+    addconversation:'user/services/',
+    getconversation:'user/services/',
+    getuser:'user/me'
   }

@@ -6,9 +6,14 @@ import Sidebar from "../Common/Sidebar";
 import moment from "moment";
 import { handleSuccess, handleError } from "../Common/CustomAlerts";
 import Header from "../Common/Header";
+import Conversation from "../Common/ConversationModal";
+
 export default function UServiceDetails(props) {
+  const [isOpen, setIsOpen] = useState(false);
   const [servicesList, setServicesList] = useState([]);
-  const [serviceId, setServiceId] = useState([]);
+  const [serviceId, setServiceId] = useState(0);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [createFile, setCreateFile] = useState(null);
   const applicationAPI = () => {
     const headerconfig = {
       headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
@@ -16,7 +21,91 @@ export default function UServiceDetails(props) {
     return {
       fetchAll: () =>
         axios.get(config.apiurl + config.userservices, headerconfig),
+      uploadFile: (newRecord) =>
+        axios.post(config.apiurl + config.fileupload, newRecord, headerconfig),
+      downloadDocument: (id) =>
+        axios.get(
+          config.apiurl + config.filedownload + serviceId + "/documents/1",
+          headerconfig
+        ),
     };
+  };
+  const togglePopup = () => {
+    setIsOpen(!isOpen);
+  };
+  const checkConversation = () => {
+    {
+      togglePopup();
+    }
+  };
+  function userFileUpload(e, documentId) {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
+      const formData = new FormData();
+      formData.append("documentId", documentId);
+      formData.append("userServiceId", serviceId);
+      formData.append("file", e.target.files[0]);
+      uploadData(formData);
+    }
+  }
+  function ViewDocument(documentId) {
+    applicationAPI()
+      .downloadDocument(documentId)
+      .then((res) => SaveFile(res.data))
+      .catch(function (error) {
+        if (error.response) {
+          handleError(error.response.data.message);
+        }
+      });
+  }
+  function SaveFile(fileData) {
+    const url = window.URL.createObjectURL(new Blob([fileData]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "file.pdf");
+    document.body.appendChild(link);
+    link.click();
+  }
+  function OpenFile(fileData) {
+    const url = window.URL.createObjectURL(new Blob([fileData]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "file.pdf");
+    document.body.appendChild(link);
+    link.click();
+  }
+  function buildFileSelector() {
+    const fileSelector = document.createElement("input");
+    fileSelector.setAttribute("type", "file");
+    return fileSelector;
+  }
+  function DownloadDocument(documentId) {
+    applicationAPI()
+      .downloadDocument(documentId)
+      .then((res) => console.log(res.data))
+      .catch(function (error) {
+        if (error.response) {
+          handleError(error.response.data.message);
+        }
+      });
+  }
+  const uploadData = (formData) => {
+    applicationAPI()
+      .uploadFile(formData)
+      .then((res) => {
+        console.log(res);
+        if (res.data.status == 200) {
+          handleSuccess("File uploaded successfully");
+          refreshServicesList();
+        } else {
+          handleError("Failed to upload file");
+        }
+      })
+      .catch(function (error) {
+        if (error.response) {
+          handleError(error.response.data.message);
+        }
+      });
   };
   function refreshServicesList() {
     var m = window.location.pathname.split("/");
@@ -32,10 +121,11 @@ export default function UServiceDetails(props) {
   }
   useEffect(() => {
     refreshServicesList();
+    setCreateFile(buildFileSelector);
   }, []);
   return (
     <div>
-    <Header></Header>
+      <Header></Header>
       <Sidebar></Sidebar>
       <div className="main-page">
         <div className>
@@ -58,22 +148,19 @@ export default function UServiceDetails(props) {
               <div className="col-md-8">
                 <div className="page-title-d">
                   <h2 className="font-avenir-bold">
-                    {" "}
-                    <img src="/images/file-icon.png" />{" "}
+                    <img src="/images/file-icon.png" />
                     <span> LIMITED LIABILITY PARTNERSHIP</span>
                   </h2>
                 </div>
               </div>
               <div className="col-md-4">
-                <a
-                  data-toggle="modal"
-                  data-target="#Conversation_modal"
-                  href="#"
-                  className="conversation-btn"
+                <Link
+                  className="startdiscussion-btn"
+                  to={props.myroute}
+                  onClick={checkConversation}
                 >
-                  {" "}
-                  <img src="/images/comments.png" /> Conversation
-                </a>
+                  <img src="/images/comments.png" /> Start Discussion
+                </Link>
               </div>
             </div>
             <div className="clearfix" />
@@ -90,48 +177,72 @@ export default function UServiceDetails(props) {
                         </th>
                         <th scope="col">Date Applied</th>
                         <th scope="col" style={{ width: "12%" }}>
-                          {" "}
                           Actions
                         </th>
                       </tr>
                     </thead>
-                    {servicesList && servicesList
-                      .filter((servicesList) => servicesList.id == serviceId)
-                      .map((documentList) => (
-                        <tbody key={documentList.id}>
-                          {documentList.documents.map((document, index) => (
-                            <tr>
-                              <td scope="row" key={document.id}>
-                                {index + 1}
-                              </td>
-                              <td>{document.documentId}</td>
-                              <td>
-                                <a href="#">
-                                  <img src="/images/download-icon.png" />{" "}
-                                  <span style={{ textDecoration: "underline" }}>
-                                    {document.name}
-                                  </span>
-                                </a>
-                              </td>
-                              <td>12 Jun 2021</td>
-                              <td>
-                                <button>
-                                  <img src="/images/view-icon.png" />
-                                </button>
-                                <button>
-                                  <img src="/images/download-icon.png" />
-                                </button>
-                                <button disabled>
-                                  <img
-                                    src="/images/edit-icon.png"
-                                    className="disabled-icon"
-                                  />
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      ))}
+                    {servicesList &&
+                      servicesList
+                        .filter((servicesList) => servicesList.id == serviceId)
+                        .map((documentList) => (
+                          <tbody key={documentList.id}>
+                            {documentList.documents.map((document, index) => (
+                              <tr key={document.id}>
+                                <td scope="row">{index + 1}</td>
+                                <td>{document.documentId}</td>
+                                <td>
+                                  {document.fileName ? (
+                                    <span>{document.name}</span>
+                                  ) : (
+                                    <Link to={"#"}>
+                                      <img src="/images/download-icon.png" />
+                                      <span
+                                        style={{ textDecoration: "underline" }}
+                                      >
+                                        {document.name}
+                                      </span>
+                                    </Link>
+                                  )}
+                                </td>
+                                <td>
+                                  {moment(document.createdAt).format(
+                                    "DD MMM YYYY"
+                                  )}
+                                </td>
+                                <td>
+                                  {document.fileName ? (
+                                    <Link
+                                      className="button"
+                                      to="#"
+                                      onClick={(e) =>
+                                        userFileUpload(e, document.documentId)
+                                      }
+                                    >
+                                      <img src="/images/edit-icon.png" />
+                                    </Link>
+                                  ) : (
+                                    <>
+                                      <button
+                                        onClick={() => {
+                                          ViewDocument(document.documentId);
+                                        }}
+                                      >
+                                        <img src="/images/view-icon.png" />
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          ViewDocument(document.documentId);
+                                        }}
+                                      >
+                                        <img src="/images/download-icon.png" />
+                                      </button>
+                                    </>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        ))}
                   </table>
                 </div>
               </div>
@@ -204,6 +315,9 @@ export default function UServiceDetails(props) {
           </div>
         </div>
       </div>
+      {isOpen && (
+        <Conversation handleClose={togglePopup} userServiceId={serviceId} />
+      )}
     </div>
   );
 }

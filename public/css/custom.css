@@ -614,7 +614,24 @@ input:focus + label {
     padding: 0.5% 1.5%;
     font-size: 100%;
 } */
-
+a.sort-btn {
+    border: 2px solid #13b59c;  
+    font-weight: 700;
+    color: #13b59c;
+    border-radius: 4px;
+    padding: 5px 15px;
+    font-size: 100%;
+    float: right;
+    margin-left: 10px;
+}
+a.sort-btn.active {
+    background-color:  #13b59c;
+    color: #fff;
+}
+a.sort-btn img {
+    width: 21px;
+    margin-right: 5px;
+}
 a.conversation-btn {
     border: 2px solid #13b59c;  
     font-weight: 700;
@@ -629,10 +646,26 @@ a.conversation-btn {
 a.conversation-btn.active {
     background-color:  #13b59c;
     color: #fff;
-
 }
-
 a.conversation-btn img {
+    width: 21px;
+    margin-right: 5px;
+}
+a.startdiscussion-btn {
+    border: 2px solid #13b59c;  
+    font-weight: 700;
+    color: #13b59c;
+    border-radius: 4px;
+    padding: 5px 15px;
+    font-size: 100%;
+    float: right;
+    margin-left: 10px;
+}
+a.startdiscussion-btn.active {
+    background-color:  #13b59c;
+    color: #fff;
+}
+a.startdiscussion-btn img {
     width: 21px;
     margin-right: 5px;
 }
@@ -660,9 +693,45 @@ button.close.close-btn-2 {
     height: 450px;
     overflow-y: scroll;
 }
-
-
-
+.popup-box {
+    position: fixed;
+    background: #00000050;
+    width: 100%;
+    height: auto;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 10000;
+  }
+  .box {
+    position: relative;
+    width: 50%;
+    margin: 0 auto;
+    height: auto;
+    background: #fff;
+    border-radius: 4px;
+    border: 1px solid #999;
+  }
+  .popup-ebox {
+    position: fixed;
+    background: #00000050;
+    width: 100%;
+    height: auto;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 10000;
+  }
+  .ebox {
+    position: relative;
+    width: 60%;
+    margin: 0 auto;
+    height: auto;
+    background: #fff;
+    border-radius: 4px;
+    border: 1px solid #999;
+    margin-top: calc(100vh - 85vh - 20px);
+  }
 .popup-body-box::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
     background-color: #cccccc;
@@ -841,7 +910,14 @@ button.submit-btn-msg img {
 .table.document-table a{
     color: #13B59C;  
 }
-
+.table.document-table a.view-btn {
+    border: 2px solid #13b59c; 
+    background-color: #13b59c; 
+    color: #ffffff;
+    border-radius: 4px;
+    padding: 2px 7px 2px 7px;
+    font-size: 100%;
+}
 .table.document-table img {
     width: 23px;
     vertical-align: middle;
@@ -861,8 +937,7 @@ button.submit-btn-msg img {
 }
 
 .table.document-table td{
-    font-size: 16px;
-   
+    font-size: 14px;   
 }
 
 .table.document-table button{border: none;
@@ -982,7 +1057,6 @@ button:focus{outline: none;}
 /* CUSTOM RADIO & CHECKBOXES
    http://stackoverflow.com/a/17541916/383904 */
 
-   .radio-btn-assigned-box{}
    .radio-btn-assigned-box label {
     display: block;
 }
@@ -1036,20 +1110,12 @@ button:focus{outline: none;}
     width: 30px;
     margin: 0px 10px;
 }
-
-
-.assign-btn-popup{
-
-}
-
 .assign-btn-popup {
     background-color: #13b59c;
     font-size: 16px;
     padding: 8px 30px;
     color: #fff;
 }
-
-
 .assign-btn-popup-cancel {
     font-size: 16px;
     padding: 8px 30px;
@@ -1064,4 +1130,40 @@ button:focus{outline: none;}
     color: #fff !important;
     margin-left: 15px;
     font-weight: 700;
+}
+.status-primary
+{
+    background-color: #E7F8F5;
+    padding: 2px 20px;
+    font-size: 12px;
+    display: inline-block;
+    color: #28a745;
+    font-weight: bold
+}
+.status-danger
+{
+    background-color: #E7F8F5;
+    padding: 2px 20px;
+    font-size: 12px;
+    display: inline-block;
+    color: #dc3545;
+    font-weight: bold
+}
+.status-warning
+{
+    background-color: #E7F8F5;
+    padding: 2px 20px;
+    font-size: 12px;
+    display: inline-block;
+    color: #ffc107;
+    font-weight: bold
+}
+.status-success
+{
+    background-color: #E7F8F5;
+    padding: 2px 20px;
+    font-size: 12px;
+    display: inline-block;
+    color: #006d0f;
+    font-weight: bold
 }
