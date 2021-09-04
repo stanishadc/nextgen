@@ -5,7 +5,7 @@ export const UserRoutes = ({ component: Component, ...rest }) => {
     return (
         <Route{...rest}
             render={(props) => {
-                if (localStorage.getItem('UUserId') !== null) {
+                if (localStorage.getItem('userRole') === "ROLE_USER") {
                     return <Component{...props} />
                 }
                 else {

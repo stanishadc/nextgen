@@ -32,12 +32,11 @@ export default function SignIn(props) {
     }
     const checkUser = (loginData) => {
         applicationAPI().checkLogin(loginData)
-            .then(res => {
-                handleSuccess("Login Success");
+            .then((res) => {
                 localStorage.setItem('userToken', res.data.accessToken);
-                props.history.push({
-                    pathname: '/users/services',
-                })
+                handleSuccess("Login Success");
+                GetUserRole(res.data.accessToken)
+
             })
             .catch(function (error) {
                 if (error.response) {
@@ -45,14 +44,42 @@ export default function SignIn(props) {
                 }
             })
     }
+    function GetUserRole(token) {
+        const headerconfig = {
+            headers: { Authorization: `Bearer ${token}` },
+        };
+        return axios
+            .get(config.apiurl + config.getuser, headerconfig)
+            .then(response => {
+                localStorage.setItem('userRole', response.data.role);
+                if (response.data.role === "ROLE_USER") {
+                    props.history.push({
+                        pathname: '/users/services',
+                    })
+                }
+                else if (response.data.role === "ROLE_ADMIN") {
+                    props.history.push({
+                        pathname: '/admin/services',
+                    })
+                }
+                else if (response.data.role === "ROLE_EXECUTIVE") {
+                    props.history.push({
+                        pathname: '/executive/services',
+                    })
+                }
+                else {
+                    handleError("Authorization failed for this user");
+                }
+            });
+    }
     const handleSubmit = e => {
         e.preventDefault();
         if (validate()) {
-                initialLoginValues.email = values.email
-                initialLoginValues.password = values.password
-                checkUser(initialLoginValues)
+            initialLoginValues.email = values.email
+            initialLoginValues.password = values.password
+            checkUser(initialLoginValues)
         }
-        else{
+        else {
             handleError("All fields are mandatory");
         }
     }
@@ -77,7 +104,7 @@ export default function SignIn(props) {
                         </div>
                         <div className="form-box row">
                             <div className="col-lg-6 offset-lg-3">
-                            <form onSubmit={handleSubmit} autoComplete="off" noValidate>
+                                <form onSubmit={handleSubmit} autoComplete="off" noValidate>
                                     <div className="form-group">
                                         <label className="input-validate" htmlFor="email">Email</label>
                                         <input className={"form-control" + applyErrorClass('email')} name="email" type="email" id="email" value={values.email} onChange={handleInputChange} placeholder="Enter your registered Email ID" />

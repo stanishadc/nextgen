@@ -5,7 +5,7 @@ export const AdminRoutes = ({ component: Component, ...rest }) => {
     return (
         <Route{...rest}
             render={(props) => {
-                if (localStorage.getItem('AUserId') !== null) {
+                if (localStorage.getItem('userRole') === "ROLE_ADMIN") {
                     return <Component{...props} />
                 }
                 else {

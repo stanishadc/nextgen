@@ -107,7 +107,7 @@ export default function AServices(props) {
                             service.status==="REJECTED" ?
                             <span className="status-danger">{service.status}</span>
                             :
-                            <span>{service.status}</span>
+                            <span className="status-success">{service.status}</span>
                             }
                             </td>
                             <td>

@@ -5,7 +5,7 @@ export const ExecutiveRoutes = ({ component: Component, ...rest }) => {
     return (
         <Route{...rest}
             render={(props) => {
-                if (localStorage.getItem('EUserId') !== null) {
+                if (localStorage.getItem('userRole') === "ROLE_EXECUTIVE") {
                     return <Component{...props} />
                 }
                 else {

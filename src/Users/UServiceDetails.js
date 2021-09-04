@@ -93,7 +93,6 @@ export default function UServiceDetails(props) {
     applicationAPI()
       .uploadFile(formData)
       .then((res) => {
-        console.log(res);
         if (res.data.status == 200) {
           handleSuccess("File uploaded successfully");
           refreshServicesList();
