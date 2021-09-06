@@ -98,14 +98,14 @@ export default function AServices(props) {
                             {service.status==="NEW" ?
                             <span className="status-primary">{service.status}</span>
                             :
-                            service.status==="PENDING" ?
+                            service.status==="WIP" ?
                             <span className="status-warning">{service.status}</span>
                             :
-                            service.status==="APPROVED" ?
+                            service.status==="SUBMITTED" ?
                             <span className="status-success">{service.status}</span>
                             :
-                            service.status==="REJECTED" ?
-                            <span className="status-danger">{service.status}</span>
+                            service.status==="ASSIGNED" ?
+                            <span className="status-info">{service.status}</span>
                             :
                             <span className="status-success">{service.status}</span>
                             }
@@ -130,8 +130,7 @@ export default function AServices(props) {
             <div className="row mart40">
               <div className="col-md-6">
                 <p className="showing-entries">
-                  {" "}
-                  Showing <span> 1 to 10 of 48</span> entries
+                  Showing <span> 1 to 1 of 1</span> entries
                 </p>
               </div>
               <div className="col-md-6">
@@ -147,47 +146,8 @@ export default function AServices(props) {
                         <a className="page-link" href="javascript:void(0);">
                           1
                         </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          2
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          3
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          4
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          5
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          <i className="fa  fa-caret-right" />
-                        </a>
-                      </li>
+                      </li>                      
                     </ul>
-                  </div>
-                  <div className="pagination-list-box">
-                    <div className="go-age-box">
-                      <small>Go page</small>
-                      <input type="text" />
-                      <a href="#" style={{ color: "#000", fontWeight: 700 }}>
-                        {" "}
-                        Go{" "}
-                        <i
-                          className="fa  fa-caret-right"
-                          style={{ verticalAlign: "middle" }}
-                        />
-                      </a>
-                    </div>
                   </div>
                 </div>
               </div>

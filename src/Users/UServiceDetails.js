@@ -25,9 +25,9 @@ export default function UServiceDetails(props) {
         axios.post(config.apiurl + config.fileupload, newRecord, headerconfig),
       downloadDocument: (id) =>
         axios.get(
-          config.apiurl + config.filedownload + serviceId + "/documents/1",
+          config.apiurl + config.filedownload + serviceId + "/documents/" + id,
           headerconfig
-        ),
+        )
     };
   };
   const togglePopup = () => {
@@ -82,7 +82,7 @@ export default function UServiceDetails(props) {
   function DownloadDocument(documentId) {
     applicationAPI()
       .downloadDocument(documentId)
-      .then((res) => console.log(res.data))
+      .then((res) => SaveFile(res.data))
       .catch(function (error) {
         if (error.response) {
           handleError(error.response.data.message);
@@ -210,16 +210,6 @@ export default function UServiceDetails(props) {
                                 </td>
                                 <td>
                                   {document.fileName ? (
-                                    <Link
-                                      className="button"
-                                      to="#"
-                                      onClick={(e) =>
-                                        userFileUpload(e, document.documentId)
-                                      }
-                                    >
-                                      <img src="/images/edit-icon.png" />
-                                    </Link>
-                                  ) : (
                                     <>
                                       <button
                                         onClick={() => {
@@ -230,12 +220,22 @@ export default function UServiceDetails(props) {
                                       </button>
                                       <button
                                         onClick={() => {
-                                          ViewDocument(document.documentId);
+                                          DownloadDocument(document.documentId);
                                         }}
                                       >
                                         <img src="/images/download-icon.png" />
                                       </button>
                                     </>
+                                  ) : (
+                                    <Link
+                                      className="button"
+                                      to="#"
+                                      onClick={(e) =>
+                                        userFileUpload(e, document.documentId)
+                                      }
+                                    >
+                                      <img src="/images/edit-icon.png" />
+                                    </Link>                                    
                                   )}
                                 </td>
                               </tr>
@@ -250,7 +250,7 @@ export default function UServiceDetails(props) {
             <div className="row mart40">
               <div className="col-md-6">
                 <p className="showing-entries">
-                  Showing <span> 1 to 10 of 48</span> entries
+                  Showing <span> 1 to 1 of 1</span> entries
                 </p>
               </div>
               <div className="col-md-6">
@@ -267,46 +267,7 @@ export default function UServiceDetails(props) {
                           1
                         </a>
                       </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          2
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          3
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          4
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          5
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          <i className="fa  fa-caret-right" />
-                        </a>
-                      </li>
                     </ul>
-                  </div>
-                  <div className="pagination-list-box">
-                    <div className="go-age-box">
-                      <small>Go page</small>
-                      <input type="text" />
-                      <a href="#" style={{ color: "#000", fontWeight: 700 }}>
-                        {" "}
-                        Go{" "}
-                        <i
-                          className="fa  fa-caret-right"
-                          style={{ verticalAlign: "middle" }}
-                        />
-                      </a>
-                    </div>
                   </div>
                 </div>
               </div>

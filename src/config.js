@@ -9,5 +9,6 @@ module.exports={
     filedownload:'user/services/',
     addconversation:'user/services/',
     getconversation:'user/services/',
-    getuser:'user/me'
+    getuser:'user/me',
+    updateservice:'user/services/'
   }

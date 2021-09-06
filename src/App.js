@@ -12,6 +12,7 @@ import AdminServiceDetails from './Admin/AServiceDetails';
 import { ExecutiveRoutes } from './ExecutiveRoutes';
 import ExecutiveServices from './Executive/EServices';
 import ExecutiveServiceDetails from './Executive/EServiceDetails';
+import pagination from './Common/Pagination';
 export const history = createBrowserHistory();
 export default class App extends Component {
   render() {
@@ -22,7 +23,7 @@ export default class App extends Component {
             <Route exact path='/' component={Register} />
             <Route path='/signin' component={SignIn} />
             <Route path='/register' component={Register} />
-
+<Route path='/pagination' component={pagination} />
             <UserRoutes path='/users/services' component={UserServices} />
             <UserRoutes path='/users/service/details/:id' component={UserServiceDetails} />
 

@@ -3,10 +3,16 @@ import config from "../config";
 import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
 import { handleError } from "../Common/CustomAlerts";
+const initialFieldValues = {
+  serviceId: 0,
+  executiveId: 0,
+  status: "",
+};
 
 export default function ExecutiveModal(props) {
   const history = useHistory();
   const [executiveList, setExecutiveList] = useState([]);
+  const [assignedExecutive, setAssignedExecutive] = useState(0);
   const applicationAPI = () => {
     const headerconfig = {
       headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
@@ -14,7 +20,17 @@ export default function ExecutiveModal(props) {
     return {
       fetchAll: () =>
         axios.get(config.apiurl + config.executives, headerconfig),
+      assignExecutive: (newRecord) =>
+        axios.put(
+          config.apiurl + config.updateservice + props.userServiceId,
+          newRecord,
+          headerconfig
+        ),
     };
+  };
+  const onChangeValue = (event) => {
+    console.log(event.target.value)
+    setAssignedExecutive(event.target.value)
   };
   function refreshExecutiveList() {
     applicationAPI()
@@ -31,6 +47,22 @@ export default function ExecutiveModal(props) {
   }, []);
   const CloseLogin = () => {
     props.handleEClose();
+    console.log("1")
+  };
+  const AssignTasks = (e) => {
+    e.preventDefault();
+      initialFieldValues.status = "Assigned";
+      initialFieldValues.serviceId = props.userServiceId;
+      initialFieldValues.executiveId = assignedExecutive;
+      updateService(initialFieldValues);
+  };
+  const updateService = (formData) => {
+    applicationAPI()
+      .assignExecutive(formData)
+      .then((res) => {
+        console.log(res.data);
+        props.handleEClose();
+      });
   };
   return (
     <div className="popup-ebox">
@@ -44,8 +76,10 @@ export default function ExecutiveModal(props) {
             <div className="modal-content status-box">
               <div className="modal-body ">
                 <Link
-                  className="close close-btn-2" onClick={CloseLogin}
-                  aria-label="Close">
+                  className="close close-btn-2"
+                  onClick={CloseLogin}
+                  aria-label="Close"
+                >
                   <span aria-hidden="true">×</span>
                 </Link>
                 <div className="assigned-box">
@@ -67,32 +101,43 @@ export default function ExecutiveModal(props) {
                     </div>
                   </div>
                   <div className="row ">
-                  {executiveList &&
-                        executiveList.map(executive => (
-                    <div className="col-md-4">
-                      <div className="radio-btn-assigned-box">
-                        <label className="rad">
-                          <input type="radio" name="rad1" defaultValue="a" />
-                          <i /> <img src="/images/assigned-1.png" /> {executive.name}
-                          Ahmed
-                        </label>                        
-                      </div>
-                    </div>
-                        ))}                    
+                    {executiveList &&
+                      executiveList.map((executive) => (
+                        <div className="col-md-4">
+                          <div className="radio-btn-assigned-box">
+                            <label className="rad">
+                              <input
+                                type="radio"
+                                name="rad1"
+                                value={executive.id}
+                                onChange={onChangeValue}
+                              />
+                              <i /> <img src="/images/assigned-1.png" />
+                              {executive.name}
+                              Ahmed
+                            </label>
+                          </div>
+                        </div>
+                      ))}
                   </div>
                   <div className="col-md-12 mt-4">
-                      <div className="text-right">
-                        <button
-                          type="button"
-                          className="btn assign-btn-popup-cancel" onClick={CloseLogin}
-                        >
-                          Cancel
-                        </button>
-                        <button type="button" className="btn assign-btn-popup">
-                          Assign
-                        </button>
-                      </div>
+                    <div className="text-right">
+                      <button
+                        type="button"
+                        className="btn assign-btn-popup-cancel"
+                        onClick={CloseLogin}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        className="btn assign-btn-popup"
+                        onClick={AssignTasks}
+                      >
+                        Assign
+                      </button>
                     </div>
+                  </div>
                 </div>
               </div>
             </div>

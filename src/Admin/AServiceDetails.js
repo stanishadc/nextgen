@@ -4,10 +4,15 @@ import axios from "axios";
 import { Link, useHistory } from "react-router-dom";
 import Sidebar from "../Common/Sidebar";
 import moment from "moment";
-import { handleError } from "../Common/CustomAlerts";
+import { handleSuccess,handleError } from "../Common/CustomAlerts";
 import Header from "../Common/Header";
 import ConversationModal from "../Common/ConversationModal";
 import ExecutiveModal from "../Common/ExecutiveModal";
+
+const initialServiceValues = {
+    userServiceId: 0,
+    status: ''
+}
 
 export default function AServiceDetails(props) {
   const history = useHistory();
@@ -17,6 +22,9 @@ export default function AServiceDetails(props) {
   const [serviceId, setServiceId] = useState([]);
   const [userName, setUserName] = useState([]);
   const [serviceName, setServiceName] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [createFile, setCreateFile] = useState(null);
+
   const applicationAPI = () => {
     const headerconfig = {
       headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
@@ -24,6 +32,13 @@ export default function AServiceDetails(props) {
     return {
       fetchAll: () =>
         axios.get(config.apiurl + config.userservices, headerconfig),
+        uploadFile: (newRecord) =>
+        axios.post(config.apiurl + config.fileupload, newRecord, headerconfig),
+      downloadDocument: (id) =>
+        axios.get(
+          config.apiurl + config.filedownload + serviceId + "/documents/" + id,
+          headerconfig
+        )
     };
   };
   const togglePopup = () => {
@@ -59,6 +74,61 @@ export default function AServiceDetails(props) {
     {
       toggleEPopup();
     }
+  };
+  function userFileUpload(e, documentId) {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
+      const formData = new FormData();
+      formData.append("documentId", documentId);
+      formData.append("userServiceId", serviceId);
+      formData.append("file", e.target.files[0]);
+      uploadData(formData);
+    }
+  }
+  function ViewDocument(documentId) {
+    applicationAPI()
+      .downloadDocument(documentId)
+      .then((res) => SaveFile(res.data))
+      .catch(function (error) {
+        if (error.response) {
+          handleError(error.response.data.message);
+        }
+      });
+  }
+  function SaveFile(fileData) {
+    const url = window.URL.createObjectURL(new Blob([fileData]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "file.pdf");
+    document.body.appendChild(link);
+    link.click();
+  }
+  function DownloadDocument(documentId) {
+    applicationAPI()
+      .downloadDocument(documentId)
+      .then((res) => SaveFile(res.data))
+      .catch(function (error) {
+        if (error.response) {
+          handleError(error.response.data.message);
+        }
+      });
+  }
+  const uploadData = (formData) => {
+    applicationAPI()
+      .uploadFile(formData)
+      .then((res) => {
+        if (res.data.status == 200) {
+          handleSuccess("File uploaded successfully");
+          refreshServicesList();
+        } else {
+          handleError("Failed to upload file");
+        }
+      })
+      .catch(function (error) {
+        if (error.response) {
+          handleError(error.response.data.message);
+        }
+      });
   };
   useEffect(() => {
     refreshServicesList();
@@ -135,23 +205,53 @@ export default function AServiceDetails(props) {
                                 </td>
                                 <td>{document.documentId}</td>
                                 <td>
-                                  <a href="#">
-                                    <img src="/images/download-icon.png" />{" "}
-                                    <span
-                                      style={{ textDecoration: "underline" }}
-                                    >
-                                      {document.name}
-                                    </span>
-                                  </a>
+                                 {document.fileName ? (
+                                    <span>{document.name}</span>
+                                  ) : (
+                                    <Link to={props.myroute} onClick={() => {
+                                          DownloadDocument(document.documentId);
+                                        }}>
+                                      <img src="/images/download-icon.png" />
+                                      <span
+                                        style={{ textDecoration: "underline" }}
+                                      >
+                                        {document.name}
+                                      </span>
+                                    </Link>
+                                  )}
                                 </td>
-                                <td>12 Jun 2021</td>
+                                <td>{moment(document.createdAt).format(
+                                    "DD MMM YYYY"
+                                  )}</td>
                                 <td>
-                                  <button>
-                                    <img src="/images/view-icon.png" />
-                                  </button>
-                                  <button>
-                                    <img src="/images/download-icon.png" />
-                                  </button>
+                                  {document.fileName ? (
+                                    <>
+                                      <button
+                                        onClick={() => {
+                                          ViewDocument(document.documentId);
+                                        }}
+                                      >
+                                        <img src="/images/view-icon.png" />
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          DownloadDocument(document.documentId);
+                                        }}
+                                      >
+                                        <img src="/images/download-icon.png" />
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <Link
+                                      className="button"
+                                      to="#"
+                                      onClick={(e) =>
+                                        userFileUpload(e, document.documentId)
+                                      }
+                                    >
+                                      <img src="/images/edit-icon.png" />
+                                    </Link>                                    
+                                  )}
                                 </td>
                               </tr>
                             ))}
@@ -162,10 +262,10 @@ export default function AServiceDetails(props) {
               </div>
             </div>
             <div className="clearfix" />
-            <div className="row mart40">
+           <div className="row mart40">
               <div className="col-md-6">
                 <p className="showing-entries">
-                  Showing <span> 1 to 10 of 48</span> entries
+                  Showing <span> 1 to 1 of 1</span> entries
                 </p>
               </div>
               <div className="col-md-6">
@@ -182,46 +282,7 @@ export default function AServiceDetails(props) {
                           1
                         </a>
                       </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          2
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          3
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          4
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          5
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          <i className="fa  fa-caret-right" />
-                        </a>
-                      </li>
                     </ul>
-                  </div>
-                  <div className="pagination-list-box">
-                    <div className="go-age-box">
-                      <small>Go page</small>
-                      <input type="text" />
-                      <a href="#" style={{ color: "#000", fontWeight: 700 }}>
-                        {" "}
-                        Go{" "}
-                        <i
-                          className="fa  fa-caret-right"
-                          style={{ verticalAlign: "middle" }}
-                        />
-                      </a>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -230,7 +291,7 @@ export default function AServiceDetails(props) {
         </div>
       </div>
       {isOpen && <ConversationModal handleClose={togglePopup} userServiceId={serviceId}/>}
-      {isEOpen && <ExecutiveModal handleEClose={toggleEPopup} />}
+      {isEOpen && <ExecutiveModal handleEClose={toggleEPopup} userServiceId={serviceId}/>}
     </div>
   );
 }

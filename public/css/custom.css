@@ -1155,7 +1155,7 @@ button:focus{outline: none;}
     padding: 2px 20px;
     font-size: 12px;
     display: inline-block;
-    color: #ffc107;
+    color: #000000;
     font-weight: bold
 }
 .status-success
@@ -1165,5 +1165,14 @@ button:focus{outline: none;}
     font-size: 12px;
     display: inline-block;
     color: #006d0f;
+    font-weight: bold
+}
+.status-info
+{
+    background-color: #E7F8F5;
+    padding: 2px 20px;
+    font-size: 12px;
+    display: inline-block;
+    color: #0c5460;
     font-weight: bold
 }

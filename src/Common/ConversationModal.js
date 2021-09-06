@@ -61,7 +61,6 @@ export default function ConversationModal(props) {
     applicationAPI()
       .create(formData)
       .then((res) => {
-        console.log(res);
         refreshConversationList();
         values.message = "";
       });
