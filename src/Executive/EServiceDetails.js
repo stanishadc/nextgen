@@ -22,6 +22,17 @@ export default function EServiceDetails(props) {
     return {
       fetchAll: () =>
         axios.get(config.apiurl + config.userservices, headerconfig),
+        downloadDocument: (id) =>
+        axios.get(
+          config.apiurl + config.filedownload + serviceId + "/documents/" + id,
+          headerconfig
+        ),
+        assignExecutive: (updateData) =>
+        axios.put(
+          config.apiurl + config.updateservice + "612d1f13fc461b2c8bedea52",
+          updateData,
+          headerconfig
+        )
     };
   };
   const togglePopup = () => {
@@ -50,6 +61,55 @@ export default function EServiceDetails(props) {
       togglePopup();
     }
   };
+  function ViewDocument(documentId) {
+    applicationAPI()
+      .downloadDocument(documentId)
+      .then((res) => SaveFile(res.data))
+      .catch(function (error) {
+        if (error.response) {
+          handleError(error.response.data.message);
+        }
+      });
+  }
+  function SaveFile(fileData) {
+    const url = window.URL.createObjectURL(new Blob([fileData]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "file.pdf");
+    document.body.appendChild(link);
+    link.click();
+  }
+  function DownloadDocument(documentId) {
+    applicationAPI()
+      .downloadDocument(documentId)
+      .then((res) => SaveFile(res.data))
+      .catch(function (error) {
+        if (error.response) {
+          handleError(error.response.data.message);
+        }
+      });
+  }
+  const AssignTasks = (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('status', "COMPLETED");
+    formData.append('serviceId', "612d1f13fc461b2c8bedea52");
+    formData.append('executiveId', "6129d58bfc2e103e5b088df5");
+    updateService(formData);
+  };
+  const updateService = (formData) => {
+    applicationAPI()
+      .assignExecutive(formData)
+      .then((res) => {
+        console.log(res.data);
+        props.handleEClose();
+      }).catch(function (error) {
+        console.log(error)
+        if (error.response) {
+          handleError(error.response.data.message);
+        }
+      });
+  };
   useEffect(() => {
     refreshServicesList();
   }, []);
@@ -65,10 +125,10 @@ export default function EServiceDetails(props) {
                 <div className="breadcrum-1">
                   <ul>
                     <li>
-                      <a href="#"> My Dashboard </a> &gt;
+                      <Link to={"/executive/services"}> Home </Link> &gt;
                     </li>
                     <li>
-                      <a href="#">&nbsp;My Customers</a> &gt;
+                      <Link to={"/executive/services"}>&nbsp;Services Applied</Link> &gt;
                     </li>
                     <li>&nbsp;Services Applied </li>
                   </ul>
@@ -87,8 +147,8 @@ export default function EServiceDetails(props) {
                 </div>
               </div>
               <div className="col-md-4 admin-btn">
-                <Link className="conversation-btn" onClick={checkConversation}>
-                  <img src="/images/comments.png" /> Mark As Done
+                <Link className="startdiscussion-btn active" onClick={AssignTasks}>
+                  <img src="/images/checked.png" /> Mark As Done
                 </Link>
               </div>
             </div>
@@ -122,23 +182,39 @@ export default function EServiceDetails(props) {
                                 </td>
                                 <td>{document.documentId}</td>
                                 <td>
-                                  <a href="#">
-                                    <img src="/images/download-icon.png" />{" "}
-                                    <span
-                                      style={{ textDecoration: "underline" }}
-                                    >
-                                      {document.name}
-                                    </span>
-                                  </a>
+                                 {document.fileName ? (
+                                    <span>{document.name}</span>
+                                  ) : (
+                                    <Link to={props.myroute} onClick={() => {
+                                          DownloadDocument(document.documentId);
+                                        }}>
+                                      <img src="/images/download-icon.png" />
+                                      <span
+                                        style={{ textDecoration: "underline" }}
+                                      >
+                                        {document.name}
+                                      </span>
+                                    </Link>
+                                  )}
                                 </td>
-                                <td>12 Jun 2021</td>
-                                <td>
-                                  <button>
-                                    <img src="/images/view-icon.png" />
-                                  </button>
-                                  <button>
-                                    <img src="/images/download-icon.png" />
-                                  </button>
+                                <td>{moment(document.createdAt).format(
+                                    "DD MMM YYYY"
+                                  )}</td>
+                                <td>                                  
+                                      <button
+                                        onClick={() => {
+                                          ViewDocument(document.documentId);
+                                        }}
+                                      >
+                                        <img src="/images/view-icon.png" />
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          DownloadDocument(document.documentId);
+                                        }}
+                                      >
+                                        <img src="/images/download-icon.png" />
+                                      </button>
                                 </td>
                               </tr>
                             ))}
@@ -150,9 +226,9 @@ export default function EServiceDetails(props) {
             </div>
             <div className="clearfix" />
             <div className="row mart40">
-              <div className="col-md-6">
+             <div className="col-md-6">
                 <p className="showing-entries">
-                  Showing <span> 1 to 10 of 48</span> entries
+                  Showing <span> 1 to 1 of 1</span> entries
                 </p>
               </div>
               <div className="col-md-6">
@@ -169,46 +245,7 @@ export default function EServiceDetails(props) {
                           1
                         </a>
                       </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          2
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          3
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          4
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          5
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          <i className="fa  fa-caret-right" />
-                        </a>
-                      </li>
                     </ul>
-                  </div>
-                  <div className="pagination-list-box">
-                    <div className="go-age-box">
-                      <small>Go page</small>
-                      <input type="text" />
-                      <a href="#" style={{ color: "#000", fontWeight: 700 }}>
-                        {" "}
-                        Go{" "}
-                        <i
-                          className="fa  fa-caret-right"
-                          style={{ verticalAlign: "middle" }}
-                        />
-                      </a>
-                    </div>
                   </div>
                 </div>
               </div>

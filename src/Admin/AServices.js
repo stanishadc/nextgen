@@ -41,11 +41,14 @@ export default function AServices(props) {
               <div className="col-md-12">
                 <div className="breadcrum-1">
                   <ul>
-                    <li>
-                      <a href="#"> My Dashboard </a> &gt;
+                     <li>
+                      <Link to={"/admin/services"}> Home </Link> &gt;
                     </li>
                     <li>
-                      <a href="#">&nbsp;Limited Liability Partnership</a>
+                      &nbsp;Limited Liability Partnership
+                    </li>
+                    <li>
+                      <a href="#">&nbsp;</a>
                     </li>
                   </ul>
                 </div>
@@ -99,13 +102,13 @@ export default function AServices(props) {
                             <span className="status-primary">{service.status}</span>
                             :
                             service.status==="WIP" ?
-                            <span className="status-warning">{service.status}</span>
+                            <span className="status-info">{service.status}</span>
                             :
                             service.status==="SUBMITTED" ?
                             <span className="status-success">{service.status}</span>
                             :
                             service.status==="ASSIGNED" ?
-                            <span className="status-info">{service.status}</span>
+                            <span className="status-warning">{service.status}</span>
                             :
                             <span className="status-success">{service.status}</span>
                             }

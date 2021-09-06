@@ -20,17 +20,16 @@ export default function ExecutiveModal(props) {
     return {
       fetchAll: () =>
         axios.get(config.apiurl + config.executives, headerconfig),
-      assignExecutive: (newRecord) =>
+      assignExecutive: (updateData) =>
         axios.put(
-          config.apiurl + config.updateservice + props.userServiceId,
-          newRecord,
+          config.apiurl + config.updateservice + "612d1f13fc461b2c8bedea52",
+          updateData,
           headerconfig
-        ),
+        )
     };
   };
   const onChangeValue = (event) => {
-    console.log(event.target.value)
-    setAssignedExecutive(event.target.value)
+    setAssignedExecutive(event.target.value);
   };
   function refreshExecutiveList() {
     applicationAPI()
@@ -47,14 +46,14 @@ export default function ExecutiveModal(props) {
   }, []);
   const CloseLogin = () => {
     props.handleEClose();
-    console.log("1")
   };
   const AssignTasks = (e) => {
     e.preventDefault();
-      initialFieldValues.status = "Assigned";
-      initialFieldValues.serviceId = props.userServiceId;
-      initialFieldValues.executiveId = assignedExecutive;
-      updateService(initialFieldValues);
+    const formData = new FormData();
+    formData.append('status', "ASSIGNED");
+    formData.append('serviceId', "612d1f13fc461b2c8bedea52");
+    formData.append('executiveId', "6129d58bfc2e103e5b088df5");
+    updateService(formData);
   };
   const updateService = (formData) => {
     applicationAPI()
@@ -62,6 +61,11 @@ export default function ExecutiveModal(props) {
       .then((res) => {
         console.log(res.data);
         props.handleEClose();
+      }).catch(function (error) {
+        console.log(error)
+        if (error.response) {
+          handleError(error.response.data.message);
+        }
       });
   };
   return (
@@ -108,7 +112,7 @@ export default function ExecutiveModal(props) {
                             <label className="rad">
                               <input
                                 type="radio"
-                                name="rad1"
+                                name="executive"
                                 value={executive.id}
                                 onChange={onChangeValue}
                               />

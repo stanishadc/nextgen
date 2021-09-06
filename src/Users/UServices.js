@@ -42,11 +42,11 @@ export default function UServices(props) {
               <div className="col-md-12">
                 <div className="breadcrum-1">
                   <ul>
-                    <li>
-                      <a href="#"> My Dashboard </a> &gt;
+                  <li>
+                      <Link to={"/users/services"}> My Dashboard </Link> &gt;
                     </li>
                     <li>
-                      <a href="#">&nbsp;Applied Services </a>
+                      &nbsp;Applied Services
                     </li>
                   </ul>
                 </div>
@@ -55,7 +55,6 @@ export default function UServices(props) {
               <div className="col-md-8">
                 <div className="page-title-d">
                   <h2 className="font-avenir-bold">
-                    {" "}
                     <img src="/images/file-icon.png" />
                     <span>APPLIED SERVICES</span>
                   </h2>

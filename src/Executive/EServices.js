@@ -42,10 +42,10 @@ export default function EServices(props) {
                 <div className="breadcrum-1">
                   <ul>
                     <li>
-                      <a href="#"> My Dashboard </a> &gt;
+                      <Link to={"/executive/services"}> Home </Link> &gt;
                     </li>
                     <li>
-                      <a href="#">&nbsp;Applied Services </a>
+                      &nbsp;Services Applied
                     </li>
                   </ul>
                 </div>
@@ -54,7 +54,6 @@ export default function EServices(props) {
               <div className="col-md-8">
                 <div className="page-title-d">
                   <h2 className="font-avenir-bold">
-                    {" "}
                     <img src="/images/file-icon.png" />
                     <span>APPLIED SERVICES</span>
                   </h2>
@@ -120,8 +119,7 @@ export default function EServices(props) {
             <div className="row mart40">
               <div className="col-md-6">
                 <p className="showing-entries">
-                  {" "}
-                  Showing <span> 1 to 10 of 48</span> entries
+                  Showing <span> 1 to 1 of 1</span> entries
                 </p>
               </div>
               <div className="col-md-6">
@@ -138,46 +136,7 @@ export default function EServices(props) {
                           1
                         </a>
                       </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          2
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          3
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          4
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          5
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          <i className="fa  fa-caret-right" />
-                        </a>
-                      </li>
                     </ul>
-                  </div>
-                  <div className="pagination-list-box">
-                    <div className="go-age-box">
-                      <small>Go page</small>
-                      <input type="text" />
-                      <a href="#" style={{ color: "#000", fontWeight: 700 }}>
-                        {" "}
-                        Go{" "}
-                        <i
-                          className="fa  fa-caret-right"
-                          style={{ verticalAlign: "middle" }}
-                        />
-                      </a>
-                    </div>
                   </div>
                 </div>
               </div>

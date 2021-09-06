@@ -24,6 +24,7 @@ export default function AServiceDetails(props) {
   const [serviceName, setServiceName] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [createFile, setCreateFile] = useState(null);
+  const [serviceStatus, setServiceStatus] = useState(null);
 
   const applicationAPI = () => {
     const headerconfig = {
@@ -53,10 +54,11 @@ export default function AServiceDetails(props) {
     applicationAPI()
       .fetchAll()
       .then(
-        (res) => (
+        (res) => (          
           setServicesList(res.data),
           setUserName(res.data[0].userName),
-          setServiceName(res.data[0].serviceName)
+          setServiceName(res.data[0].serviceName),
+          setServiceStatus((res.data.filter((servicesList) => servicesList.id == serviceId)).[0].status)
         )
       )
       .catch(function (error) {
@@ -117,7 +119,7 @@ export default function AServiceDetails(props) {
     applicationAPI()
       .uploadFile(formData)
       .then((res) => {
-        if (res.data.status == 200) {
+        if (res.status == 200) {
           handleSuccess("File uploaded successfully");
           refreshServicesList();
         } else {
@@ -145,10 +147,10 @@ export default function AServiceDetails(props) {
                 <div className="breadcrum-1">
                   <ul>
                     <li>
-                      <a href="#"> My Dashboard </a> &gt;
+                      <Link to={"/admin/services"}> My Dashboard </Link> &gt;
                     </li>
                     <li>
-                      <a href="#">&nbsp;My Customers</a> &gt;
+                      <Link to={"/admin/services"}>&nbsp;My Customers</Link> &gt;
                     </li>
                     <li>&nbsp;Services Applied </li>
                   </ul>
@@ -170,9 +172,14 @@ export default function AServiceDetails(props) {
                 <Link className="conversation-btn" onClick={checkConversation}>
                   <img src="/images/comments.png" /> Conversation
                 </Link>
+                {serviceStatus!=="ASSIGNED" ? (
                 <Link className="conversation-btn active" onClick={assignExecutive}>
-                  <img src="/images/checked.png" /> Assign
+                  <img src="/images/admin-assig-icon.png" /> ASSIGN
+                </Link>):(
+                <Link className="conversation-btn active">
+                  <img src="/images/checked.png" /> {serviceStatus}
                 </Link>
+                )}
               </div>
             </div>
             <div className="clearfix" />
@@ -205,9 +212,8 @@ export default function AServiceDetails(props) {
                                 </td>
                                 <td>{document.documentId}</td>
                                 <td>
-                                 {document.fileName ? (
-                                    <span>{document.name}</span>
-                                  ) : (
+                                 {document.fileName ? 
+                                 (
                                     <Link to={props.myroute} onClick={() => {
                                           DownloadDocument(document.documentId);
                                         }}>
@@ -218,7 +224,9 @@ export default function AServiceDetails(props) {
                                         {document.name}
                                       </span>
                                     </Link>
-                                  )}
+                                  ) :(
+                                    <span>{document.name}</span>
+                                  ) }
                                 </td>
                                 <td>{moment(document.createdAt).format(
                                     "DD MMM YYYY"
@@ -240,17 +248,30 @@ export default function AServiceDetails(props) {
                                       >
                                         <img src="/images/download-icon.png" />
                                       </button>
+                                       <button
+                                        onClick={() => {
+                                          ViewDocument(document.documentId);
+                                        }}
+                                      >
+                                        <img src="/images/edit-icon.png" />
+                                      </button>
                                     </>
                                   ) : (
-                                    <Link
-                                      className="button"
-                                      to="#"
-                                      onClick={(e) =>
+                                    <>
+                                     <button className="button">
+                                        <img src="/images/view-icon.png" className="disabled-icon"/>
+                                      </button>
+                                      <label onClick={(e) =>
                                         userFileUpload(e, document.documentId)
-                                      }
-                                    >
-                                      <img src="/images/edit-icon.png" />
-                                    </Link>                                    
+                                      }>
+                                    <input className="button" type="file" style={{display:"none"}}></input>
+                                      <img src="/images/upload-icon.png" />
+                                    
+                                    </label>
+                                    <button className="button">
+                                        <img src="/images/edit-icon.png" className="disabled-icon"/>
+                                      </button>
+                                    </>
                                   )}
                                 </td>
                               </tr>

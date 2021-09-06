@@ -11,6 +11,7 @@
 }
 .font-avenir-bold {
     font-family: Avenir-bold;
+    text-transform: uppercase;
 }
 .register-img-box{
     background-color: #e7f7f5;
@@ -1151,25 +1152,25 @@ button:focus{outline: none;}
 }
 .status-warning
 {
-    background-color: #E7F8F5;
+    background-color: #fff3cd;
     padding: 2px 20px;
     font-size: 12px;
     display: inline-block;
-    color: #000000;
+    color: #856404;
     font-weight: bold
 }
 .status-success
 {
-    background-color: #E7F8F5;
+    background-color: #d4edda;
     padding: 2px 20px;
     font-size: 12px;
     display: inline-block;
-    color: #006d0f;
+    color: #155724;
     font-weight: bold
 }
 .status-info
 {
-    background-color: #E7F8F5;
+    background-color: #d1ecf1;
     padding: 2px 20px;
     font-size: 12px;
     display: inline-block;

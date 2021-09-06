@@ -12,8 +12,8 @@ export default function UServiceDetails(props) {
   const [isOpen, setIsOpen] = useState(false);
   const [servicesList, setServicesList] = useState([]);
   const [serviceId, setServiceId] = useState(0);
+  const [serviceName, setServiceName] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [createFile, setCreateFile] = useState(null);
   const applicationAPI = () => {
     const headerconfig = {
       headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
@@ -21,8 +21,11 @@ export default function UServiceDetails(props) {
     return {
       fetchAll: () =>
         axios.get(config.apiurl + config.userservices, headerconfig),
-      uploadFile: (newRecord) =>
-        axios.post(config.apiurl + config.fileupload, newRecord, headerconfig),
+      uploadFile: (id, newRecord) =>
+        axios.post(
+          config.apiurl + config.fileupload + serviceId + "/documents/" + id,newRecord,
+          headerconfig
+        ),
       downloadDocument: (id) =>
         axios.get(
           config.apiurl + config.filedownload + serviceId + "/documents/" + id,
@@ -45,7 +48,7 @@ export default function UServiceDetails(props) {
       formData.append("documentId", documentId);
       formData.append("userServiceId", serviceId);
       formData.append("file", e.target.files[0]);
-      uploadData(formData);
+      uploadData(documentId, formData);
     }
   }
   function ViewDocument(documentId) {
@@ -89,11 +92,11 @@ export default function UServiceDetails(props) {
         }
       });
   }
-  const uploadData = (formData) => {
+  const uploadData = (documentId, formData) => {
     applicationAPI()
-      .uploadFile(formData)
+      .uploadFile(documentId, formData)
       .then((res) => {
-        if (res.data.status == 200) {
+        if (res.status == 200) {
           handleSuccess("File uploaded successfully");
           refreshServicesList();
         } else {
@@ -108,10 +111,15 @@ export default function UServiceDetails(props) {
   };
   function refreshServicesList() {
     var m = window.location.pathname.split("/");
+    console.log(m[4]);
     setServiceId(m[4]);
     applicationAPI()
       .fetchAll()
-      .then((res) => setServicesList(res.data))
+      .then(
+        (res) => (
+          setServicesList(res.data), setServiceName(res.data[0].serviceName)
+        )
+      )
       .catch(function (error) {
         if (error.response) {
           handleError(error.response.data.message);
@@ -120,7 +128,6 @@ export default function UServiceDetails(props) {
   }
   useEffect(() => {
     refreshServicesList();
-    setCreateFile(buildFileSelector);
   }, []);
   return (
     <div>
@@ -134,12 +141,12 @@ export default function UServiceDetails(props) {
                 <div className="breadcrum-1">
                   <ul>
                     <li>
-                      <a href="#"> My Dashboard </a> &gt;
+                      <Link to={"/users/services"}> My Dashboard </Link> &gt;
                     </li>
                     <li>
-                      <a href="#">&nbsp;Applied Services </a> &gt;
+                      <Link to={"/users/services"}>&nbsp;Applied Services</Link> &gt;
                     </li>
-                    <li>&nbsp;Limited Liability Partnership </li>
+                    <li>&nbsp;{serviceName} </li>
                   </ul>
                 </div>
               </div>
@@ -148,7 +155,7 @@ export default function UServiceDetails(props) {
                 <div className="page-title-d">
                   <h2 className="font-avenir-bold">
                     <img src="/images/file-icon.png" />
-                    <span> LIMITED LIABILITY PARTNERSHIP</span>
+                    <span> {serviceName}</span>
                   </h2>
                 </div>
               </div>
@@ -191,9 +198,7 @@ export default function UServiceDetails(props) {
                                 <td>{document.documentId}</td>
                                 <td>
                                   {document.fileName ? (
-                                    <span>{document.name}</span>
-                                  ) : (
-                                    <Link to={"#"}>
+                                    <Link to={props.myroute}>
                                       <img src="/images/download-icon.png" />
                                       <span
                                         style={{ textDecoration: "underline" }}
@@ -201,6 +206,8 @@ export default function UServiceDetails(props) {
                                         {document.name}
                                       </span>
                                     </Link>
+                                  ) : (
+                                    <span>{document.name}</span>
                                   )}
                                 </td>
                                 <td>
@@ -225,17 +232,43 @@ export default function UServiceDetails(props) {
                                       >
                                         <img src="/images/download-icon.png" />
                                       </button>
+                                      <button
+                                        onClick={() => {
+                                          ViewDocument(document.documentId);
+                                        }}
+                                      >
+                                        <img src="/images/edit-icon.png" />
+                                      </button>
                                     </>
                                   ) : (
-                                    <Link
-                                      className="button"
-                                      to="#"
-                                      onClick={(e) =>
-                                        userFileUpload(e, document.documentId)
-                                      }
-                                    >
-                                      <img src="/images/edit-icon.png" />
-                                    </Link>                                    
+                                    <>
+                                      <button className="button">
+                                        <img
+                                          src="/images/view-icon.png"
+                                          className="disabled-icon"
+                                        />
+                                      </button>
+                                      <label>
+                                        <input
+                                          className="button"
+                                          type="file"
+                                          onChange={(e) => {
+                                            userFileUpload(
+                                              e,
+                                              document.documentId
+                                            );
+                                          }}
+                                          style={{ display: "none" }}
+                                        ></input>
+                                        <img src="/images/upload-icon.png" />
+                                      </label>
+                                      <button className="button">
+                                        <img
+                                          src="/images/edit-icon.png"
+                                          className="disabled-icon"
+                                        />
+                                      </button>
+                                    </>
                                   )}
                                 </td>
                               </tr>
