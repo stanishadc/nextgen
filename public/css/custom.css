@@ -1177,3 +1177,23 @@ button:focus{outline: none;}
     color: #0c5460;
     font-weight: bold
 }
+.sort-by {
+    border: 1px solid #13b59c;
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 12px;
+    border-radius: 4px;
+}
+.sort-by select {
+    border: none;
+    font-weight: 700;
+
+}
+
+.sort-by select:focus{
+    outline: none;
+}
+
+.sort-by img {
+    width: 12px;
+}

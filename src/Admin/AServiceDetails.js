@@ -58,7 +58,7 @@ export default function AServiceDetails(props) {
           setServicesList(res.data),
           setUserName(res.data[0].userName),
           setServiceName(res.data[0].serviceName),
-          setServiceStatus((res.data.filter((servicesList) => servicesList.id == serviceId)).[0].status)
+          setServiceStatus((res.data.filter((servicesList) => servicesList.id == serviceId)))
         )
       )
       .catch(function (error) {

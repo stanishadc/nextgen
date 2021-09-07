@@ -63,9 +63,18 @@ export default function AServices(props) {
                 </div>
               </div>
               <div className="col-md-4">
-                <Link to="/" className="sort-btn">
-                  <img src="/images/comments.png" /> Sort By
-                </Link>
+                <div className="text-right">
+                  <div className="sort-by"><img src="/images/sort-by.png" /> Sort By :
+                    <select>
+                      <option selected>None</option>
+                      <option value={3}>9345001</option>
+                      <option value={1}>9345002</option>
+                      <option value={0}>9345003</option>
+                      <option value={2}>9345004</option>
+                      <option value={8}>9345005</option>
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="clearfix" />
