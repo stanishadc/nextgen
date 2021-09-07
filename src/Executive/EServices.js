@@ -64,11 +64,7 @@ export default function EServices(props) {
                   <div className="sort-by"><img src="/images/sort-by.png" /> Sort By :
                     <select>
                       <option selected>None</option>
-                      <option value={3}>9345001</option>
-                      <option value={1}>9345002</option>
-                      <option value={0}>9345003</option>
-                      <option value={2}>9345004</option>
-                      <option value={8}>9345005</option>
+                      <option value="newDate">Newest</option>
                     </select>
                   </div>
                 </div>

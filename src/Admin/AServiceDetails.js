@@ -43,10 +43,23 @@ export default function AServiceDetails(props) {
     };
   };
   const togglePopup = () => {
-    setIsOpen(!isOpen);
+    console.log(isOpen);
+    if(isOpen)
+    {
+    setIsOpen(false);
+    }
+    else{
+      setIsOpen(true);
+    }
   };
   const toggleEPopup = () => {
-    setIsEOpen(!isOpen);
+    if(isEOpen)
+    {
+      setIsEOpen(false);
+    }
+    else{
+      setIsEOpen(true);
+    }
   };
   function refreshServicesList() {
     var m = window.location.pathname.split("/");

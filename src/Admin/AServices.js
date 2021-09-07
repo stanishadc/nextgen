@@ -8,6 +8,8 @@ import { handleSuccess, handleError } from "../Common/CustomAlerts";
 import Header from "../Common/Header";
 export default function AServices(props) {
   const [servicesList, setServicesList] = useState([]);
+  const [polls, setPolls] = React.useState(null);
+  const [sortValue,setSortValue]= useState('defaultSort')
   const applicationAPI = () => {
     const headerconfig = {
       headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
@@ -20,7 +22,7 @@ export default function AServices(props) {
   function refreshServicesList() {
     applicationAPI()
       .fetchAll()
-      .then((res) => setServicesList(res.data))
+      .then((res) => (setServicesList(res.data),setPolls(res.data)))
       .catch(function (error) {
         if (error.response) {
           handleError(error.response.data.message);
@@ -67,11 +69,7 @@ export default function AServices(props) {
                   <div className="sort-by"><img src="/images/sort-by.png" /> Sort By :
                     <select>
                       <option selected>None</option>
-                      <option value={3}>9345001</option>
-                      <option value={1}>9345002</option>
-                      <option value={0}>9345003</option>
-                      <option value={2}>9345004</option>
-                      <option value={8}>9345005</option>
+                      <option value="newDate">Newest</option>
                     </select>
                   </div>
                 </div>
@@ -96,10 +94,10 @@ export default function AServices(props) {
                     </thead>
                     <tbody>
                       {servicesList &&
-                        servicesList.map((service) => (
+                        servicesList.map((service, index) => (
                           <tr>
                             <td scope="row" key={service.id}>
-                              1
+                              {index+1}
                             </td>
                             <td>{service.serviceCode}</td>
                             <td>{service.userName}</td>

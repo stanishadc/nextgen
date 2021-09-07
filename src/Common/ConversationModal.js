@@ -75,6 +75,7 @@ export default function ConversationModal(props) {
         }
       });
   }
+  const applyErrorClass = field => ((field in errors && errors[field] == false) ? ' form-control-danger' : '')
   useEffect(() => {
     refreshConversationList();
   }, []);
@@ -95,14 +96,13 @@ export default function ConversationModal(props) {
                   Lorem ipsum is a pseudo-Latin text used in web design,
                   typography, layout, and printing in place of English to.
                 </small>
-                <button
-                  type="button"
+                <Link
                   className="close close-btn-2"
-                  data-dismiss="modal"
+                  onClick={CloseLogin}
                   aria-label="Close"
                 >
                   <span aria-hidden="true">×</span>
-                </button>
+                </Link>
               </div>
               <div className="modal-body ">
                 <div className="popup-body-box">
@@ -130,11 +130,12 @@ export default function ConversationModal(props) {
                     ))}
                 </div>
               </div>
-              <div className="modal-footer">
-                <form onSubmit={handleSubmit} autoComplete="off" noValidate>
+              <form onSubmit={handleSubmit} autoComplete="off" noValidate>
+              <div className="modal-footer">                
                   <div className="write-message-box">
                     <input
                       type="text"
+                      className={applyErrorClass('message')}
                       placeholder="Type a message..."
                       value={values.message}
                       onChange={handleInputChange}
@@ -143,9 +144,9 @@ export default function ConversationModal(props) {
                     <button className="submit-btn-msg">
                       <img src="/images/send-button.png" />
                     </button>
-                  </div>
-                </form>
+                  </div>                
               </div>
+              </form>
               {/* <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> */}
             </div>
           </div>
