@@ -18,6 +18,12 @@ export default function UServiceDetails(props) {
     const headerconfig = {
       headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
     };
+    const fileHeaderconfig = {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        responseType: "blob",
+      },
+    };
     return {
       fetchAll: () =>
         axios.get(config.apiurl + config.userservices, headerconfig),
@@ -30,7 +36,7 @@ export default function UServiceDetails(props) {
       downloadDocument: (id) =>
         axios.get(
           config.apiurl + config.filedownload + serviceId + "/documents/" + id,
-          headerconfig
+          fileHeaderconfig
         ),
     };
   };
@@ -69,11 +75,6 @@ export default function UServiceDetails(props) {
     link.setAttribute("download", "file.pdf");
     document.body.appendChild(link);
     link.click();
-  }
-  function buildFileSelector() {
-    const fileSelector = document.createElement("input");
-    fileSelector.setAttribute("type", "file");
-    return fileSelector;
   }
   function DownloadDocument(documentId) {
     applicationAPI()
@@ -238,13 +239,20 @@ export default function UServiceDetails(props) {
                                       >
                                         <img src="/images/download-icon.png" />
                                       </button>
-                                      <button
-                                        onClick={() => {
-                                          ViewDocument(document.documentId);
-                                        }}
-                                      >
+                                      <label>
+                                        <input
+                                          className="button"
+                                          type="file"
+                                          onChange={(e) => {
+                                            userFileUpload(
+                                              e,
+                                              document.documentId
+                                            );
+                                          }}
+                                          style={{ display: "none" }}
+                                        ></input>
                                         <img src="/images/edit-icon.png" />
-                                      </button>
+                                      </label>
                                     </>
                                   ) : (
                                     <>
