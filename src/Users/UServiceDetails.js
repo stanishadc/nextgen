@@ -23,14 +23,15 @@ export default function UServiceDetails(props) {
         axios.get(config.apiurl + config.userservices, headerconfig),
       uploadFile: (id, newRecord) =>
         axios.post(
-          config.apiurl + config.fileupload + serviceId + "/documents/" + id,newRecord,
+          config.apiurl + config.fileupload + serviceId + "/documents/" + id,
+          newRecord,
           headerconfig
         ),
       downloadDocument: (id) =>
         axios.get(
           config.apiurl + config.filedownload + serviceId + "/documents/" + id,
           headerconfig
-        )
+        ),
     };
   };
   const togglePopup = () => {
@@ -54,7 +55,7 @@ export default function UServiceDetails(props) {
   function ViewDocument(documentId) {
     applicationAPI()
       .downloadDocument(documentId)
-      .then((res) => SaveFile(res.data))
+      .then((res) => OpenFile(res.data))
       .catch(function (error) {
         if (error.response) {
           handleError(error.response.data.message);
@@ -62,14 +63,6 @@ export default function UServiceDetails(props) {
       });
   }
   function SaveFile(fileData) {
-    const url = window.URL.createObjectURL(new Blob([fileData]));
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "file.pdf");
-    document.body.appendChild(link);
-    link.click();
-  }
-  function OpenFile(fileData) {
     const url = window.URL.createObjectURL(new Blob([fileData]));
     const link = document.createElement("a");
     link.href = url;
@@ -109,6 +102,18 @@ export default function UServiceDetails(props) {
         }
       });
   };
+  function OpenFile(fileData) {
+    const url = window.URL.createObjectURL(new Blob([fileData]));
+    var oReq = new XMLHttpRequest();
+    oReq.open("GET", url, true);
+    oReq.responseType = "blob";
+    oReq.onload = function () {
+      const file = new Blob([oReq.response], { type: "application/pdf" });
+      const fileURL = URL.createObjectURL(file);
+      window.open(fileURL, "_blank");
+    };
+    oReq.send();
+  }
   function refreshServicesList() {
     var m = window.location.pathname.split("/");
     console.log(m[4]);
@@ -144,7 +149,8 @@ export default function UServiceDetails(props) {
                       <Link to={"/users/services"}> My Dashboard </Link> &gt;
                     </li>
                     <li>
-                      <Link to={"/users/services"}>&nbsp;Applied Services</Link> &gt;
+                      <Link to={"/users/services"}>&nbsp;Applied Services</Link>{" "}
+                      &gt;
                     </li>
                     <li>&nbsp;{serviceName} </li>
                   </ul>

@@ -4,15 +4,15 @@ import axios from "axios";
 import { Link, useHistory } from "react-router-dom";
 import Sidebar from "../Common/Sidebar";
 import moment from "moment";
-import { handleSuccess,handleError } from "../Common/CustomAlerts";
+import { handleSuccess, handleError } from "../Common/CustomAlerts";
 import Header from "../Common/Header";
 import ConversationModal from "../Common/ConversationModal";
 import ExecutiveModal from "../Common/ExecutiveModal";
 
 const initialServiceValues = {
-    userServiceId: 0,
-    status: ''
-}
+  userServiceId: 0,
+  status: "",
+};
 
 export default function AServiceDetails(props) {
   const history = useHistory();
@@ -33,31 +33,27 @@ export default function AServiceDetails(props) {
     return {
       fetchAll: () =>
         axios.get(config.apiurl + config.userservices, headerconfig),
-        uploadFile: (newRecord) =>
+      uploadFile: (newRecord) =>
         axios.post(config.apiurl + config.fileupload, newRecord, headerconfig),
       downloadDocument: (id) =>
         axios.get(
           config.apiurl + config.filedownload + serviceId + "/documents/" + id,
           headerconfig
-        )
+        ),
     };
   };
   const togglePopup = () => {
     console.log(isOpen);
-    if(isOpen)
-    {
-    setIsOpen(false);
-    }
-    else{
+    if (isOpen) {
+      setIsOpen(false);
+    } else {
       setIsOpen(true);
     }
   };
   const toggleEPopup = () => {
-    if(isEOpen)
-    {
+    if (isEOpen) {
       setIsEOpen(false);
-    }
-    else{
+    } else {
       setIsEOpen(true);
     }
   };
@@ -67,11 +63,13 @@ export default function AServiceDetails(props) {
     applicationAPI()
       .fetchAll()
       .then(
-        (res) => (          
+        (res) => (
           setServicesList(res.data),
           setUserName(res.data[0].userName),
           setServiceName(res.data[0].serviceName),
-          setServiceStatus((res.data.filter((servicesList) => servicesList.id == serviceId)))
+          setServiceStatus(
+            res.data.filter((servicesList) => servicesList.id == serviceId)
+          )
         )
       )
       .catch(function (error) {
@@ -103,12 +101,24 @@ export default function AServiceDetails(props) {
   function ViewDocument(documentId) {
     applicationAPI()
       .downloadDocument(documentId)
-      .then((res) => SaveFile(res.data))
+      .then((res) => OpenFile(res.data))
       .catch(function (error) {
         if (error.response) {
           handleError(error.response.data.message);
         }
       });
+  }
+  function OpenFile(fileData) {
+    const url = window.URL.createObjectURL(new Blob([fileData]));
+    var oReq = new XMLHttpRequest();
+    oReq.open("GET", url, true);
+    oReq.responseType = "blob";
+    oReq.onload = function () {
+      const file = new Blob([oReq.response], { type: "application/pdf" });
+      const fileURL = URL.createObjectURL(file);
+      window.open(fileURL, "_blank");
+    };
+    oReq.send();
   }
   function SaveFile(fileData) {
     const url = window.URL.createObjectURL(new Blob([fileData]));
@@ -150,7 +160,7 @@ export default function AServiceDetails(props) {
   }, []);
   return (
     <div>
-     <Header></Header>
+      <Header></Header>
       <Sidebar></Sidebar>
       <div className="main-page">
         <div className>
@@ -163,7 +173,8 @@ export default function AServiceDetails(props) {
                       <Link to={"/admin/services"}> My Dashboard </Link> &gt;
                     </li>
                     <li>
-                      <Link to={"/admin/services"}>&nbsp;My Customers</Link> &gt;
+                      <Link to={"/admin/services"}>&nbsp;My Customers</Link>{" "}
+                      &gt;
                     </li>
                     <li>&nbsp;Services Applied </li>
                   </ul>
@@ -185,13 +196,17 @@ export default function AServiceDetails(props) {
                 <Link className="conversation-btn" onClick={checkConversation}>
                   <img src="/images/comments.png" /> Conversation
                 </Link>
-                {serviceStatus!=="ASSIGNED" ? (
-                <Link className="conversation-btn active" onClick={assignExecutive}>
-                  <img src="/images/admin-assig-icon.png" /> ASSIGN
-                </Link>):(
-                <Link className="conversation-btn active">
-                  <img src="/images/checked.png" /> {serviceStatus}
-                </Link>
+                {serviceStatus !== "ASSIGNED" ? (
+                  <Link
+                    className="conversation-btn active"
+                    onClick={assignExecutive}
+                  >
+                    <img src="/images/admin-assig-icon.png" /> ASSIGN
+                  </Link>
+                ) : (
+                  <Link className="conversation-btn active">
+                    <img src="/images/checked.png" /> {serviceStatus}
+                  </Link>
                 )}
               </div>
             </div>
@@ -225,11 +240,13 @@ export default function AServiceDetails(props) {
                                 </td>
                                 <td>{document.documentId}</td>
                                 <td>
-                                 {document.fileName ? 
-                                 (
-                                    <Link to={props.myroute} onClick={() => {
-                                          DownloadDocument(document.documentId);
-                                        }}>
+                                  {document.fileName ? (
+                                    <Link
+                                      to={props.myroute}
+                                      onClick={() => {
+                                        DownloadDocument(document.documentId);
+                                      }}
+                                    >
                                       <img src="/images/download-icon.png" />
                                       <span
                                         style={{ textDecoration: "underline" }}
@@ -237,13 +254,15 @@ export default function AServiceDetails(props) {
                                         {document.name}
                                       </span>
                                     </Link>
-                                  ) :(
+                                  ) : (
                                     <span>{document.name}</span>
-                                  ) }
+                                  )}
                                 </td>
-                                <td>{moment(document.createdAt).format(
+                                <td>
+                                  {moment(document.createdAt).format(
                                     "DD MMM YYYY"
-                                  )}</td>
+                                  )}
+                                </td>
                                 <td>
                                   {document.fileName ? (
                                     <>
@@ -261,7 +280,7 @@ export default function AServiceDetails(props) {
                                       >
                                         <img src="/images/download-icon.png" />
                                       </button>
-                                       <button
+                                      <button
                                         onClick={() => {
                                           ViewDocument(document.documentId);
                                         }}
@@ -271,18 +290,29 @@ export default function AServiceDetails(props) {
                                     </>
                                   ) : (
                                     <>
-                                     <button className="button">
-                                        <img src="/images/view-icon.png" className="disabled-icon"/>
+                                      <button className="button">
+                                        <img
+                                          src="/images/view-icon.png"
+                                          className="disabled-icon"
+                                        />
                                       </button>
-                                      <label onClick={(e) =>
-                                        userFileUpload(e, document.documentId)
-                                      }>
-                                    <input className="button" type="file" style={{display:"none"}}></input>
-                                      <img src="/images/upload-icon.png" />
-                                    
-                                    </label>
-                                    <button className="button">
-                                        <img src="/images/edit-icon.png" className="disabled-icon"/>
+                                      <label
+                                        onClick={(e) =>
+                                          userFileUpload(e, document.documentId)
+                                        }
+                                      >
+                                        <input
+                                          className="button"
+                                          type="file"
+                                          style={{ display: "none" }}
+                                        ></input>
+                                        <img src="/images/upload-icon.png" />
+                                      </label>
+                                      <button className="button">
+                                        <img
+                                          src="/images/edit-icon.png"
+                                          className="disabled-icon"
+                                        />
                                       </button>
                                     </>
                                   )}
@@ -296,7 +326,7 @@ export default function AServiceDetails(props) {
               </div>
             </div>
             <div className="clearfix" />
-           <div className="row mart40">
+            <div className="row mart40">
               <div className="col-md-6">
                 <p className="showing-entries">
                   Showing <span> 1 to 1 of 1</span> entries
@@ -324,8 +354,15 @@ export default function AServiceDetails(props) {
           </div>
         </div>
       </div>
-      {isOpen && <ConversationModal handleClose={togglePopup} userServiceId={serviceId}/>}
-      {isEOpen && <ExecutiveModal handleEClose={toggleEPopup} userServiceId={serviceId}/>}
+      {isOpen && (
+        <ConversationModal
+          handleClose={togglePopup}
+          userServiceId={serviceId}
+        />
+      )}
+      {isEOpen && (
+        <ExecutiveModal handleEClose={toggleEPopup} userServiceId={serviceId} />
+      )}
     </div>
   );
 }
