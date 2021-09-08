@@ -21,7 +21,7 @@ export default function UServiceDetails(props) {
     const fileHeaderconfig = {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-        responseType: "blob",
+        responseType: "arraybuffer",
       },
     };
     return {
@@ -58,33 +58,36 @@ export default function UServiceDetails(props) {
       uploadData(documentId, formData);
     }
   }
-  function ViewDocument(documentId) {
-    applicationAPI()
-      .downloadDocument(documentId)
-      .then((res) => OpenFile(res.data))
-      .catch(function (error) {
-        if (error.response) {
-          handleError(error.response.data.message);
-        }
-      });
-  }
-  function SaveFile(fileData) {
-    const url = window.URL.createObjectURL(new Blob([fileData]));
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "file.pdf");
-    document.body.appendChild(link);
-    link.click();
+  function ViewDocument(documentId) {    
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", config.apiurl + config.filedownload + serviceId + "/documents/" + documentId, true);
+    xhr.setRequestHeader("Authorization", `Bearer ${localStorage.getItem("userToken")}`)
+    xhr.responseType = "arraybuffer";
+    xhr.onload = function (e) {
+      if (this.status == 200) {
+        var blob = new Blob([this.response], { type: "application/pdf" });
+        var link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        window.open(link.href, "_blank");
+      }
+    };
+    xhr.send();
   }
   function DownloadDocument(documentId) {
-    applicationAPI()
-      .downloadDocument(documentId)
-      .then((res) => SaveFile(res.data))
-      .catch(function (error) {
-        if (error.response) {
-          handleError(error.response.data.message);
-        }
-      });
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", config.apiurl + config.filedownload + serviceId + "/documents/" + documentId, true);
+    xhr.setRequestHeader("Authorization", `Bearer ${localStorage.getItem("userToken")}`)
+    xhr.responseType = "arraybuffer";
+    xhr.onload = function (e) {
+      if (this.status == 200) {
+        var blob = new Blob([this.response], { type: "application/pdf" });
+        var link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        link.download = "Report_" + new Date() + ".pdf";
+        link.click();
+      }
+    };
+    xhr.send();
   }
   const uploadData = (documentId, formData) => {
     applicationAPI()
@@ -103,18 +106,7 @@ export default function UServiceDetails(props) {
         }
       });
   };
-  function OpenFile(fileData) {
-    const url = window.URL.createObjectURL(new Blob([fileData]));
-    var oReq = new XMLHttpRequest();
-    oReq.open("GET", url, true);
-    oReq.responseType = "blob";
-    oReq.onload = function () {
-      const file = new Blob([oReq.response], { type: "application/pdf" });
-      const fileURL = URL.createObjectURL(file);
-      window.open(fileURL, "_blank");
-    };
-    oReq.send();
-  }
+  
   function refreshServicesList() {
     var m = window.location.pathname.split("/");
     console.log(m[4]);
