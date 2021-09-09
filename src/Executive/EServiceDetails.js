@@ -22,17 +22,17 @@ export default function EServiceDetails(props) {
     return {
       fetchAll: () =>
         axios.get(config.apiurl + config.userservices, headerconfig),
-        downloadDocument: (id) =>
+      downloadDocument: (id) =>
         axios.get(
           config.apiurl + config.filedownload + serviceId + "/documents/" + id,
           headerconfig
         ),
-        assignExecutive: (updateData) =>
+      assignExecutive: (updateData) =>
         axios.put(
           config.apiurl + config.updateservice + "612d1f13fc461b2c8bedea52",
           updateData,
           headerconfig
-        )
+        ),
     };
   };
   const togglePopup = () => {
@@ -61,40 +61,43 @@ export default function EServiceDetails(props) {
       togglePopup();
     }
   };
-  function ViewDocument(documentId) {
-    applicationAPI()
-      .downloadDocument(documentId)
-      .then((res) => SaveFile(res.data))
-      .catch(function (error) {
-        if (error.response) {
-          handleError(error.response.data.message);
-        }
-      });
-  }
-  function SaveFile(fileData) {
-    const url = window.URL.createObjectURL(new Blob([fileData]));
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "file.pdf");
-    document.body.appendChild(link);
-    link.click();
+  function ViewDocument(documentId) {    
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", config.apiurl + config.filedownload + serviceId + "/documents/" + documentId, true);
+    xhr.setRequestHeader("Authorization", `Bearer ${localStorage.getItem("userToken")}`)
+    xhr.responseType = "arraybuffer";
+    xhr.onload = function (e) {
+      if (this.status == 200) {
+        var blob = new Blob([this.response], { type: "application/pdf" });
+        var link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        window.open(link.href, "_blank");
+      }
+    };
+    xhr.send();
   }
   function DownloadDocument(documentId) {
-    applicationAPI()
-      .downloadDocument(documentId)
-      .then((res) => SaveFile(res.data))
-      .catch(function (error) {
-        if (error.response) {
-          handleError(error.response.data.message);
-        }
-      });
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", config.apiurl + config.filedownload + serviceId + "/documents/" + documentId, true);
+    xhr.setRequestHeader("Authorization", `Bearer ${localStorage.getItem("userToken")}`)
+    xhr.responseType = "arraybuffer";
+    xhr.onload = function (e) {
+      if (this.status == 200) {
+        var blob = new Blob([this.response], { type: "application/pdf" });
+        var link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        link.download = "Report_" + new Date() + ".pdf";
+        link.click();
+      }
+    };
+    xhr.send();
   }
   const AssignTasks = (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('status', "COMPLETED");
-    formData.append('serviceId', "612d1f13fc461b2c8bedea52");
-    formData.append('executiveId', "6129d58bfc2e103e5b088df5");
+    formData.append("status", "COMPLETED");
+    formData.append("serviceId", "612d1f13fc461b2c8bedea52");
+    formData.append("executiveId", "6129d58bfc2e103e5b088df5");
     updateService(formData);
   };
   const updateService = (formData) => {
@@ -103,8 +106,9 @@ export default function EServiceDetails(props) {
       .then((res) => {
         console.log(res.data);
         props.handleEClose();
-      }).catch(function (error) {
-        console.log(error)
+      })
+      .catch(function (error) {
+        console.log(error);
         if (error.response) {
           handleError(error.response.data.message);
         }
@@ -115,7 +119,7 @@ export default function EServiceDetails(props) {
   }, []);
   return (
     <div>
-     <Header></Header>
+      <Header></Header>
       <Sidebar></Sidebar>
       <div className="main-page">
         <div className>
@@ -128,7 +132,10 @@ export default function EServiceDetails(props) {
                       <Link to={"/executive/services"}> Home </Link> &gt;
                     </li>
                     <li>
-                      <Link to={"/executive/services"}>&nbsp;Services Applied</Link> &gt;
+                      <Link to={"/executive/services"}>
+                        &nbsp;Services Applied
+                      </Link>{" "}
+                      &gt;
                     </li>
                     <li>&nbsp;Services Applied </li>
                   </ul>
@@ -147,7 +154,10 @@ export default function EServiceDetails(props) {
                 </div>
               </div>
               <div className="col-md-4 admin-btn">
-                <Link className="startdiscussion-btn active" onClick={AssignTasks}>
+                <Link
+                  className="startdiscussion-btn active"
+                  onClick={AssignTasks}
+                >
                   <img src="/images/checked.png" /> Mark As Done
                 </Link>
               </div>
@@ -182,12 +192,15 @@ export default function EServiceDetails(props) {
                                 </td>
                                 <td>{document.documentId}</td>
                                 <td>
-                                 {document.fileName ? (
+                                  {document.fileName ? (
                                     <span>{document.name}</span>
                                   ) : (
-                                    <Link to={props.myroute} onClick={() => {
-                                          DownloadDocument(document.documentId);
-                                        }}>
+                                    <Link
+                                      to={props.myroute}
+                                      onClick={() => {
+                                        DownloadDocument(document.documentId);
+                                      }}
+                                    >
                                       <img src="/images/download-icon.png" />
                                       <span
                                         style={{ textDecoration: "underline" }}
@@ -197,24 +210,26 @@ export default function EServiceDetails(props) {
                                     </Link>
                                   )}
                                 </td>
-                                <td>{moment(document.createdAt).format(
+                                <td>
+                                  {moment(document.createdAt).format(
                                     "DD MMM YYYY"
-                                  )}</td>
-                                <td>                                  
-                                      <button
-                                        onClick={() => {
-                                          ViewDocument(document.documentId);
-                                        }}
-                                      >
-                                        <img src="/images/view-icon.png" />
-                                      </button>
-                                      <button
-                                        onClick={() => {
-                                          DownloadDocument(document.documentId);
-                                        }}
-                                      >
-                                        <img src="/images/download-icon.png" />
-                                      </button>
+                                  )}
+                                </td>
+                                <td>
+                                  <button
+                                    onClick={() => {
+                                      ViewDocument(document.documentId);
+                                    }}
+                                  >
+                                    <img src="/images/view-icon.png" />
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      DownloadDocument(document.documentId);
+                                    }}
+                                  >
+                                    <img src="/images/download-icon.png" />
+                                  </button>
                                 </td>
                               </tr>
                             ))}
@@ -226,7 +241,7 @@ export default function EServiceDetails(props) {
             </div>
             <div className="clearfix" />
             <div className="row mart40">
-             <div className="col-md-6">
+              <div className="col-md-6">
                 <p className="showing-entries">
                   Showing <span> 1 to 1 of 1</span> entries
                 </p>

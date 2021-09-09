@@ -18,19 +18,26 @@ export default function UServiceDetails(props) {
     const headerconfig = {
       headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
     };
+    const fileHeaderconfig = {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        responseType: "arraybuffer",
+      },
+    };
     return {
       fetchAll: () =>
         axios.get(config.apiurl + config.userservices, headerconfig),
       uploadFile: (id, newRecord) =>
         axios.post(
-          config.apiurl + config.fileupload + serviceId + "/documents/" + id,newRecord,
+          config.apiurl + config.fileupload + serviceId + "/documents/" + id,
+          newRecord,
           headerconfig
         ),
       downloadDocument: (id) =>
         axios.get(
           config.apiurl + config.filedownload + serviceId + "/documents/" + id,
-          headerconfig
-        )
+          fileHeaderconfig
+        ),
     };
   };
   const togglePopup = () => {
@@ -51,46 +58,36 @@ export default function UServiceDetails(props) {
       uploadData(documentId, formData);
     }
   }
-  function ViewDocument(documentId) {
-    applicationAPI()
-      .downloadDocument(documentId)
-      .then((res) => SaveFile(res.data))
-      .catch(function (error) {
-        if (error.response) {
-          handleError(error.response.data.message);
-        }
-      });
-  }
-  function SaveFile(fileData) {
-    const url = window.URL.createObjectURL(new Blob([fileData]));
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "file.pdf");
-    document.body.appendChild(link);
-    link.click();
-  }
-  function OpenFile(fileData) {
-    const url = window.URL.createObjectURL(new Blob([fileData]));
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "file.pdf");
-    document.body.appendChild(link);
-    link.click();
-  }
-  function buildFileSelector() {
-    const fileSelector = document.createElement("input");
-    fileSelector.setAttribute("type", "file");
-    return fileSelector;
+  function ViewDocument(documentId) {    
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", config.apiurl + config.filedownload + serviceId + "/documents/" + documentId, true);
+    xhr.setRequestHeader("Authorization", `Bearer ${localStorage.getItem("userToken")}`)
+    xhr.responseType = "arraybuffer";
+    xhr.onload = function (e) {
+      if (this.status == 200) {
+        var blob = new Blob([this.response], { type: "application/pdf" });
+        var link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        window.open(link.href, "_blank");
+      }
+    };
+    xhr.send();
   }
   function DownloadDocument(documentId) {
-    applicationAPI()
-      .downloadDocument(documentId)
-      .then((res) => SaveFile(res.data))
-      .catch(function (error) {
-        if (error.response) {
-          handleError(error.response.data.message);
-        }
-      });
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", config.apiurl + config.filedownload + serviceId + "/documents/" + documentId, true);
+    xhr.setRequestHeader("Authorization", `Bearer ${localStorage.getItem("userToken")}`)
+    xhr.responseType = "arraybuffer";
+    xhr.onload = function (e) {
+      if (this.status == 200) {
+        var blob = new Blob([this.response], { type: "application/pdf" });
+        var link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        link.download = "Report_" + new Date() + ".pdf";
+        link.click();
+      }
+    };
+    xhr.send();
   }
   const uploadData = (documentId, formData) => {
     applicationAPI()
@@ -109,6 +106,7 @@ export default function UServiceDetails(props) {
         }
       });
   };
+  
   function refreshServicesList() {
     var m = window.location.pathname.split("/");
     console.log(m[4]);
@@ -144,7 +142,8 @@ export default function UServiceDetails(props) {
                       <Link to={"/users/services"}> My Dashboard </Link> &gt;
                     </li>
                     <li>
-                      <Link to={"/users/services"}>&nbsp;Applied Services</Link> &gt;
+                      <Link to={"/users/services"}>&nbsp;Applied Services</Link>{" "}
+                      &gt;
                     </li>
                     <li>&nbsp;{serviceName} </li>
                   </ul>
@@ -232,13 +231,20 @@ export default function UServiceDetails(props) {
                                       >
                                         <img src="/images/download-icon.png" />
                                       </button>
-                                      <button
-                                        onClick={() => {
-                                          ViewDocument(document.documentId);
-                                        }}
-                                      >
+                                      <label>
+                                        <input
+                                          className="button"
+                                          type="file"
+                                          onChange={(e) => {
+                                            userFileUpload(
+                                              e,
+                                              document.documentId
+                                            );
+                                          }}
+                                          style={{ display: "none" }}
+                                        ></input>
                                         <img src="/images/edit-icon.png" />
-                                      </button>
+                                      </label>
                                     </>
                                   ) : (
                                     <>
