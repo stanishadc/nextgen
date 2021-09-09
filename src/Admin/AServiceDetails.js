@@ -43,7 +43,6 @@ export default function AServiceDetails(props) {
     };
   };
   const togglePopup = () => {
-    console.log(isOpen);
     if(isOpen)
     {
     setIsOpen(false);
@@ -61,24 +60,21 @@ export default function AServiceDetails(props) {
       setIsEOpen(true);
     }
   };
-  function refreshServicesList() {
+  async function refreshServicesList() {
     var m = window.location.pathname.split("/");
     setServiceId(m[4]);
-    applicationAPI()
-      .fetchAll()
-      .then(
-        (res) => (          
-          setServicesList(res.data),
-          setUserName(res.data[0].userName),
-          setServiceName(res.data[0].serviceName),
-          setServiceStatus((res.data.filter((servicesList) => servicesList.id == serviceId)))
-        )
-      )
-      .catch(function (error) {
-        if (error.response) {
-          handleError(error.response.data.message);
-        }
-      });
+    const headerconfig = {
+      headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
+    };
+    let response = await fetch(config.apiurl + config.userservices, headerconfig)
+        const json = await response.json()
+        setServicesList(json);
+          setUserName(json[0].userName);
+          setServiceName(json[0].serviceName);
+          if((json.filter((servicesList) => servicesList.id == serviceId))[0].status !== undefined)
+          {
+          setServiceStatus((json.filter((servicesList) => servicesList.id == serviceId))[0].status)
+          }
   }
   const checkConversation = () => {
     {
