@@ -52,6 +52,7 @@ export default function SignIn(props) {
             .get(config.apiurl + config.getuser, headerconfig)
             .then(response => {
                 localStorage.setItem('userRole', response.data.role);
+                localStorage.setItem('userId', response.data.id);
                 if (response.data.role === "ROLE_USER") {
                     props.history.push({
                         pathname: '/users/services',

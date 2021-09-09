@@ -4,7 +4,7 @@ import axios from "axios";
 import { Link, useHistory } from "react-router-dom";
 import Sidebar from "../Common/Sidebar";
 import moment from "moment";
-import { handleError } from "../Common/CustomAlerts";
+import { handleError, handleSuccess } from "../Common/CustomAlerts";
 import Header from "../Common/Header";
 import ConversationModal from "../Common/ConversationModal";
 
@@ -29,7 +29,7 @@ export default function EServiceDetails(props) {
         ),
       assignExecutive: (updateData) =>
         axios.put(
-          config.apiurl + config.updateservice + "612d1f13fc461b2c8bedea52",
+          config.apiurl + config.updateservice + serviceId,
           updateData,
           headerconfig
         ),
@@ -92,19 +92,19 @@ export default function EServiceDetails(props) {
     };
     xhr.send();
   }
-  const AssignTasks = (e) => {
+  const UpdateTaskStatus = (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("status", "COMPLETED");
-    formData.append("serviceId", "612d1f13fc461b2c8bedea52");
-    formData.append("executiveId", "6129d58bfc2e103e5b088df5");
+    formData.append("serviceId", serviceId);
+    formData.append("executiveId", localStorage.getItem('userId'));
     updateService(formData);
   };
   const updateService = (formData) => {
     applicationAPI()
       .assignExecutive(formData)
       .then((res) => {
-        console.log(res.data);
+        handleSuccess("Successfully Submitted")
         props.handleEClose();
       })
       .catch(function (error) {
@@ -156,7 +156,7 @@ export default function EServiceDetails(props) {
               <div className="col-md-4 admin-btn">
                 <Link
                   className="startdiscussion-btn active"
-                  onClick={AssignTasks}
+                  onClick={UpdateTaskStatus}
                 >
                   <img src="/images/checked.png" /> Mark As Done
                 </Link>
@@ -211,9 +211,7 @@ export default function EServiceDetails(props) {
                                   )}
                                 </td>
                                 <td>
-                                  {moment(document.createdAt).format(
-                                    "DD MMM YYYY"
-                                  )}
+                                  {document.createdAt}
                                 </td>
                                 <td>
                                   <button

@@ -8,8 +8,6 @@ import { handleSuccess, handleError } from "../Common/CustomAlerts";
 import Header from "../Common/Header";
 export default function AServices(props) {
   const [servicesList, setServicesList] = useState([]);
-  const [polls, setPolls] = React.useState(null);
-  const [sortValue,setSortValue]= useState('defaultSort')
   const applicationAPI = () => {
     const headerconfig = {
       headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
@@ -22,7 +20,7 @@ export default function AServices(props) {
   function refreshServicesList() {
     applicationAPI()
       .fetchAll()
-      .then((res) => (setServicesList(res.data),setPolls(res.data)))
+      .then((res) => (setServicesList(res.data)))
       .catch(function (error) {
         if (error.response) {
           handleError(error.response.data.message);
@@ -63,17 +61,7 @@ export default function AServices(props) {
                     <span>Limited Liability Partnership</span>
                   </h2>
                 </div>
-              </div>
-              <div className="col-md-4">
-                <div className="text-right">
-                  <div className="sort-by"><img src="/images/sort-by.png" /> Sort By :
-                    <select>
-                      <option selected>None</option>
-                      <option value="newDate">Newest</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
+              </div>              
             </div>
             <div className="clearfix" />
             <div className="row mart40">
@@ -102,7 +90,7 @@ export default function AServices(props) {
                             <td>{service.serviceCode}</td>
                             <td>{service.userName}</td>
                             <td>
-                              {moment(service.createdAt).format("DD MMM YYYY")}
+                              {service.createdAt}
                             </td>
                             <td>
                             {service.status==="NEW" ?

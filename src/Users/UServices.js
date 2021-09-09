@@ -60,16 +60,6 @@ export default function UServices(props) {
                   </h2>
                 </div>
               </div>
-              <div className="col-md-4">
-                <div className="text-right">
-                  <div className="sort-by"><img src="/images/sort-by.png" /> Sort By :
-                    <select>
-                      <option selected>None</option>
-                      <option value="newDate">Newest</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
             </div>
             <div className="clearfix" />
             <div className="row mart40">
@@ -98,7 +88,7 @@ export default function UServices(props) {
                             <td>{service.serviceCode}</td>
                             <td>{service.serviceName}</td>
                             <td>
-                              {moment(service.createdAt).format("DD MMM YYYY")}
+                              {service.createdAt}
                             </td>
                             <td>{service.status==="NEW" ?
                             <span className="status-primary">{service.status}</span>

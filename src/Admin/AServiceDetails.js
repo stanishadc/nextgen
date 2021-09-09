@@ -68,9 +68,9 @@ export default function AServiceDetails(props) {
     setServicesList(json);
     setUserName(json[0].userName);
     setServiceName(json[0].serviceName);
-    if ((json.filter((servicesList) => servicesList.id == serviceId))[0].status !== undefined) {
-      setServiceStatus((json.filter((servicesList) => servicesList.id == serviceId))[0].status)
-    }
+    
+    //  setServiceStatus((json.filter((servicesList) => servicesList.id == serviceId))[0].status)
+    
   }
   const checkConversation = () => {
     {
@@ -244,9 +244,7 @@ export default function AServiceDetails(props) {
                                   )}
                                 </td>
                                 <td>
-                                  {moment(document.createdAt).format(
-                                    "DD MMM YYYY"
-                                  )}
+                                  {document.createdAt}
                                 </td>
                                 <td>
                                   {document.fileName ? (

@@ -59,16 +59,6 @@ export default function EServices(props) {
                   </h2>
                 </div>
               </div>
-              <div className="col-md-4">
-                <div className="text-right">
-                  <div className="sort-by"><img src="/images/sort-by.png" /> Sort By :
-                    <select>
-                      <option selected>None</option>
-                      <option value="newDate">Newest</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
             </div>
             <div className="clearfix" />
             <div className="row mart40">
@@ -88,7 +78,7 @@ export default function EServices(props) {
                     </thead>
                     <tbody>
                       {servicesList &&
-                        servicesList.map((service) => (
+                        servicesList.filter((servicesList) => servicesList.executiveId == localStorage.getItem('userId')).map((service) => (
                           <tr>
                             <td scope="row" key={service.id}>
                               1
@@ -96,7 +86,7 @@ export default function EServices(props) {
                             <td>{service.serviceCode}</td>
                             <td>{service.serviceName}</td>
                             <td>
-                              {moment(service.createdAt).format("DD MMM YYYY")}
+                              {service.createdAt}
                             </td>
                             <td>
                               <Link

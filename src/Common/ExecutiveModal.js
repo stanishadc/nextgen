@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import config from "../config";
 import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
-import { handleError } from "../Common/CustomAlerts";
+import { handleError, handleSuccess } from "../Common/CustomAlerts";
 const initialFieldValues = {
   serviceId: 0,
   executiveId: 0,
@@ -22,7 +22,7 @@ export default function ExecutiveModal(props) {
         axios.get(config.apiurl + config.executives, headerconfig),
       assignExecutive: (updateData) =>
         axios.put(
-          config.apiurl + config.updateservice + "612d1f13fc461b2c8bedea52",
+          config.apiurl + config.updateservice + props.userServiceId,
           updateData,
           headerconfig
         )
@@ -51,15 +51,15 @@ export default function ExecutiveModal(props) {
     e.preventDefault();
     const formData = new FormData();
     formData.append('status', "ASSIGNED");
-    formData.append('serviceId', "612d1f13fc461b2c8bedea52");
-    formData.append('executiveId', "6129d58bfc2e103e5b088df5");
+    formData.append('serviceId', props.userServiceId);
+    formData.append('executiveId', assignedExecutive);
     updateService(formData);
   };
   const updateService = (formData) => {
     applicationAPI()
       .assignExecutive(formData)
       .then((res) => {
-        console.log(res.data);
+        handleSuccess("Successfully Assigned");
         props.handleEClose();
       }).catch(function (error) {
         console.log(error)
@@ -118,7 +118,6 @@ export default function ExecutiveModal(props) {
                               />
                               <i /> <img src="/images/assigned-1.png" />
                               {executive.name}
-                              Ahmed
                             </label>
                           </div>
                         </div>
