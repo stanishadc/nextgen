@@ -43,11 +43,10 @@ export default function AServiceDetails(props) {
     };
   };
   const togglePopup = () => {
-    if(isOpen)
-    {
-    setIsOpen(false);
+    if (isOpen) {
+      setIsOpen(false);
     }
-    else{
+    else {
       setIsOpen(true);
     }
   };
@@ -65,14 +64,13 @@ export default function AServiceDetails(props) {
       headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
     };
     let response = await fetch(config.apiurl + config.userservices, headerconfig)
-        const json = await response.json()
-        setServicesList(json);
-          setUserName(json[0].userName);
-          setServiceName(json[0].serviceName);
-          if((json.filter((servicesList) => servicesList.id == serviceId))[0].status !== undefined)
-          {
-          setServiceStatus((json.filter((servicesList) => servicesList.id == serviceId))[0].status)
-          }
+    const json = await response.json()
+    setServicesList(json);
+    setUserName(json[0].userName);
+    setServiceName(json[0].serviceName);
+    if ((json.filter((servicesList) => servicesList.id == serviceId))[0].status !== undefined) {
+      setServiceStatus((json.filter((servicesList) => servicesList.id == serviceId))[0].status)
+    }
   }
   const checkConversation = () => {
     {
@@ -94,7 +92,7 @@ export default function AServiceDetails(props) {
       uploadData(formData);
     }
   }
-  function ViewDocument(documentId) {    
+  function ViewDocument(documentId) {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", config.apiurl + config.filedownload + serviceId + "/documents/" + documentId, true);
     xhr.setRequestHeader("Authorization", `Bearer ${localStorage.getItem("userToken")}`)
