@@ -15,7 +15,7 @@ class CheckAuth {
     Elogin(eb) {
         this.Eauthenticated = true
         eb()
-    }    
+    }
     Ulogout(ub) {
         this.Uauthenticated = false
         ub()
@@ -37,9 +37,19 @@ class CheckAuth {
     isEAuthenticated() {
         return this.Eauthenticated;
     }
-    Slogin(cb) {
-        this.Sauthenticated = true
-        cb()
+    isUserAuthenticated() {
+        if (localStorage.getItem('userToken') !== null) {
+            if (localStorage.getItem('userRole') === "ROLE_ADMIN") {
+                this.Aauthenticated = true
+            }
+            if (localStorage.getItem('userRole') === "ROLE_USER") {
+                this.Uauthenticated = true
+            }
+            if (localStorage.getItem('userRole') === "ROLE_EXECUTIVE") {
+                this.Eauthenticated = true
+            }
+        }
+        return false;
     }
 }
 export default new CheckAuth()

@@ -20,10 +20,10 @@ export default class App extends Component {
       <div>
         <Router history={history}>
           <Switch>
-            <Route exact path='/' component={Register} />
+            <Route exact path='/' component={SignIn} />
             <Route path='/signin' component={SignIn} />
             <Route path='/register' component={Register} />
-<Route path='/pagination' component={pagination} />
+            
             <UserRoutes path='/users/services' component={UserServices} />
             <UserRoutes path='/users/service/details/:id' component={UserServiceDetails} />
 

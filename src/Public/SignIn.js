@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import config from '../config';
 import axios from 'axios'
 import { Link } from 'react-router-dom';
@@ -84,6 +84,16 @@ export default function SignIn(props) {
             handleError("All fields are mandatory");
         }
     }
+    useEffect(() => {
+        if (localStorage.getItem('userToken') !== "") {
+            GetUserRole(localStorage.getItem('userToken'))
+        }
+        else{
+            props.history.push({
+                pathname: '/',
+            })
+        }
+      }, []);
     return (
         <div>
             <div className="register-page">
