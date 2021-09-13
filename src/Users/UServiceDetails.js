@@ -3,7 +3,6 @@ import config from "../config";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Sidebar from "../Common/Sidebar";
-import moment from "moment";
 import { handleSuccess, handleError } from "../Common/CustomAlerts";
 import Header from "../Common/Header";
 import Conversation from "../Common/ConversationModal";
@@ -210,9 +209,7 @@ export default function UServiceDetails(props) {
                                   )}
                                 </td>
                                 <td>
-                                  {moment(document.createdAt).format(
-                                    "DD MMM YYYY"
-                                  )}
+                                  {document.createdAt}
                                 </td>
                                 <td>
                                   {document.fileName ? (

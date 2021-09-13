@@ -3,7 +3,6 @@ import config from "../config";
 import axios from "axios";
 import { Link, useHistory } from "react-router-dom";
 import Sidebar from "../Common/Sidebar";
-import moment from "moment";
 import { handleSuccess, handleError } from "../Common/CustomAlerts";
 import Header from "../Common/Header";
 import ConversationModal from "../Common/ConversationModal";
@@ -263,13 +262,6 @@ export default function AServiceDetails(props) {
                                       >
                                         <img src="/images/download-icon.png" />
                                       </button>
-                                      <button
-                                        onClick={() => {
-                                          ViewDocument(document.documentId);
-                                        }}
-                                      >
-                                        <img src="/images/edit-icon.png" />
-                                      </button>
                                     </>
                                   ) : (
                                     <>
@@ -279,23 +271,8 @@ export default function AServiceDetails(props) {
                                           className="disabled-icon"
                                         />
                                       </button>
-                                      <label
-                                        onClick={(e) =>
-                                          userFileUpload(e, document.documentId)
-                                        }
-                                      >
-                                        <input
-                                          className="button"
-                                          type="file"
-                                          style={{ display: "none" }}
-                                        ></input>
-                                        <img src="/images/upload-icon.png" />
-                                      </label>
                                       <button className="button">
-                                        <img
-                                          src="/images/edit-icon.png"
-                                          className="disabled-icon"
-                                        />
+                                        <img src="/images/download-icon.png" className="disabled-icon"/>
                                       </button>
                                     </>
                                   )}

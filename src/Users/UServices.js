@@ -3,7 +3,6 @@ import config from "../config";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Sidebar from "../Common/Sidebar";
-import moment from "moment";
 import {handleError } from "../Common/CustomAlerts";
 import Header from "../Common/Header";
 

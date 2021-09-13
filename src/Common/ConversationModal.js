@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import config from "../config";
 import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
-import moment from "moment";
 import { handleError } from "../Common/CustomAlerts";
 const initialFieldValues = {
   serviceId: 0,
@@ -123,7 +122,7 @@ export default function ConversationModal(props) {
                             <p>{conversions.message}</p>
                           </div>
                           <p className="sent-time">
-                            Sent {moment(conversions.createdAt).format("LT")}
+                            Sent {conversions.createdAt}
                           </p>
                         </div>
                       </div>
