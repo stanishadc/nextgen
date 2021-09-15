@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link,useHistory  } from "react-router-dom";
 import auth from '../UserSecurity/CheckAuth';
+import ReactTooltip from 'react-tooltip';
 
 export default function Sidebar(props) {
     const history = useHistory();
@@ -45,7 +46,8 @@ export default function Sidebar(props) {
             </Link>
           </li>
           <li>
-            <Link
+          <ReactTooltip id="foo" />
+            <Link data-tip data-for="logoutTip"
               to={props.myroute}
               onClick={() => {
                 auth.isLogout(() => {
@@ -57,6 +59,9 @@ export default function Sidebar(props) {
             </Link>
           </li>
         </ul>
+        <ReactTooltip id="logoutTip" place="right">
+        Logout
+      </ReactTooltip>
       </div>
     </div>
   );

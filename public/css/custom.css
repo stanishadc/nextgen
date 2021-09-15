@@ -691,8 +691,8 @@ button.close.close-btn-2 {
 
 .popup-body-box {
     padding: 20px 30px;
-    height: 450px;
     overflow-y: scroll;
+    max-height: 400px;
 }
 .popup-box {
     position: fixed;
@@ -708,7 +708,7 @@ button.close.close-btn-2 {
     position: relative;
     width: 45%;
     margin: 0 auto;
-    height: auto;
+    top:20px;
   }
   .popup-ebox {
     position: fixed;

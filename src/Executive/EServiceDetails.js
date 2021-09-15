@@ -6,6 +6,7 @@ import Sidebar from "../Common/Sidebar";
 import { handleError, handleSuccess } from "../Common/CustomAlerts";
 import Header from "../Common/Header";
 import ConversationModal from "../Common/ConversationModal";
+import ReactTooltip from 'react-tooltip';
 
 export default function EServiceDetails(props) {
   const history = useHistory();
@@ -115,6 +116,7 @@ export default function EServiceDetails(props) {
   };
   useEffect(() => {
     refreshServicesList();
+    ReactTooltip.rebuild();
   }, []);
   return (
     <div>
@@ -200,7 +202,7 @@ export default function EServiceDetails(props) {
                                         DownloadDocument(document.documentId);
                                       }}
                                     >
-                                      <img src="/images/download-icon.png" />
+                                      <img src="/images/download-icon.png" data-tip data-for="downloadTip"/>
                                       <span
                                         style={{ textDecoration: "underline" }}
                                       >
@@ -213,14 +215,14 @@ export default function EServiceDetails(props) {
                                   {document.createdAt}
                                 </td>
                                 <td>
-                                  <button
+                                  <button data-tip data-for="viewTip"
                                     onClick={() => {
                                       ViewDocument(document.documentId);
                                     }}
                                   >
                                     <img src="/images/view-icon.png" />
                                   </button>
-                                  <button
+                                  <button data-tip data-for="downloadTip"
                                     onClick={() => {
                                       DownloadDocument(document.documentId);
                                     }}
@@ -265,6 +267,18 @@ export default function EServiceDetails(props) {
           </div>
         </div>
       </div>
+      <ReactTooltip id="uploadTip" place="right">
+        Upload Document
+      </ReactTooltip>
+      <ReactTooltip id="downloadTip" place="right">
+        Download Document
+      </ReactTooltip>
+      <ReactTooltip id="editTip" place="right">
+        Edit Document
+      </ReactTooltip>
+      <ReactTooltip id="viewTip" place="right">
+        View Document
+      </ReactTooltip>
       {isOpen && <ConversationModal handleClose={togglePopup} />}
     </div>
   );

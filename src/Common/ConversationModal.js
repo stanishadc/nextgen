@@ -98,7 +98,7 @@ export default function ConversationModal(props) {
                 <h5 className="modal-title ">Start discussion with Admin</h5>
                 <small>
                   Lorem ipsum is a pseudo-Latin text used in web design,
-                  typography, layout, and printing in place of English to.
+                  typography, layout
                 </small>
                 <Link
                   className="close close-btn-2"

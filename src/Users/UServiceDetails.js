@@ -6,6 +6,7 @@ import Sidebar from "../Common/Sidebar";
 import { handleSuccess, handleError } from "../Common/CustomAlerts";
 import Header from "../Common/Header";
 import Conversation from "../Common/ConversationModal";
+import ReactTooltip from 'react-tooltip';
 
 export default function UServiceDetails(props) {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +14,7 @@ export default function UServiceDetails(props) {
   const [serviceId, setServiceId] = useState(0);
   const [serviceName, setServiceName] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [serviceStatus, setServiceStatus] = useState(null);
   const applicationAPI = () => {
     const headerconfig = {
       headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
@@ -108,7 +110,6 @@ export default function UServiceDetails(props) {
   
   function refreshServicesList() {
     var m = window.location.pathname.split("/");
-    console.log(m[4]);
     setServiceId(m[4]);
     applicationAPI()
       .fetchAll()
@@ -125,6 +126,7 @@ export default function UServiceDetails(props) {
   }
   useEffect(() => {
     refreshServicesList();
+    ReactTooltip.rebuild();
   }, []);
   return (
     <div>
@@ -158,13 +160,20 @@ export default function UServiceDetails(props) {
                 </div>
               </div>
               <div className="col-md-4">
-                <Link
+              {serviceStatus !== "WIP" ? (
+                 <Link className="sort-btn active">
+                    <img src="/images/checked.png" /> Mark As Done
+                  </Link>                  
+                ) : (
+                 <Link
                   className="startdiscussion-btn"
                   to={props.myroute}
                   onClick={checkConversation}
                 >
                   <img src="/images/comments.png" /> Start Discussion
                 </Link>
+                )}
+                
               </div>
             </div>
             <div className="clearfix" />
@@ -180,7 +189,7 @@ export default function UServiceDetails(props) {
                           Document Name
                         </th>
                         <th scope="col">Date Applied</th>
-                        <th scope="col" style={{ width: "12%" }}>
+                        <th scope="col" style={{ width: "20%" }}>
                           Actions
                         </th>
                       </tr>
@@ -214,14 +223,14 @@ export default function UServiceDetails(props) {
                                 <td>
                                   {document.fileName ? (
                                     <>
-                                      <button
+                                      <button data-tip data-for="viewTip"
                                         onClick={() => {
                                           ViewDocument(document.documentId);
                                         }}
                                       >
                                         <img src="/images/view-icon.png" />
                                       </button>
-                                      <button
+                                      <button data-tip data-for="downloadTip"
                                         onClick={() => {
                                           DownloadDocument(document.documentId);
                                         }}
@@ -229,7 +238,7 @@ export default function UServiceDetails(props) {
                                         <img src="/images/download-icon.png" />
                                       </button>
                                       <label>
-                                        <input
+                                        <input data-tip data-for="uploadTip"
                                           className="button"
                                           type="file"
                                           onChange={(e) => {
@@ -240,7 +249,7 @@ export default function UServiceDetails(props) {
                                           }}
                                           style={{ display: "none" }}
                                         ></input>
-                                        <img src="/images/edit-icon.png" />
+                                        <img src="/images/edit-icon.png" data-tip data-for="editTip"/>
                                       </label>
                                     </>
                                   ) : (
@@ -263,7 +272,7 @@ export default function UServiceDetails(props) {
                                           }}
                                           style={{ display: "none" }}
                                         ></input>
-                                        <img src="/images/upload-icon.png" />
+                                        <img src="/images/upload-icon.png" data-tip data-for="uploadTip"/>
                                       </label>
                                       <button className="button">
                                         <img
@@ -311,6 +320,18 @@ export default function UServiceDetails(props) {
           </div>
         </div>
       </div>
+      <ReactTooltip id="uploadTip" place="right">
+        UploadDocument
+      </ReactTooltip>
+      <ReactTooltip id="downloadTip" place="right">
+        Download Document
+      </ReactTooltip>
+      <ReactTooltip id="editTip" place="right">
+        Edit Document
+      </ReactTooltip>
+      <ReactTooltip id="viewTip" place="right">
+        View Document
+      </ReactTooltip>
       {isOpen && (
         <Conversation handleClose={togglePopup} userServiceId={serviceId} />
       )}

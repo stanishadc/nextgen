@@ -105,7 +105,6 @@ export default function SignIn(props) {
                         </div>
                         <h1 className="title-register">Welcome to Back</h1>
                         <div className="register-login-btn">
-                            <Link to={"/register"}>Register</Link>
                             <Link to={"/signin"} className="active">Sign In</Link>
                         </div>
                         <a className="register-google-btn">

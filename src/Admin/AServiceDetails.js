@@ -7,6 +7,7 @@ import { handleSuccess, handleError } from "../Common/CustomAlerts";
 import Header from "../Common/Header";
 import ConversationModal from "../Common/ConversationModal";
 import ExecutiveModal from "../Common/ExecutiveModal";
+import ReactTooltip from 'react-tooltip';
 
 const initialServiceValues = {
   userServiceId: 0,
@@ -64,11 +65,10 @@ export default function AServiceDetails(props) {
     };
     let response = await fetch(config.apiurl + config.userservices, headerconfig)
     const json = await response.json()
-    setServicesList(json);
-    setUserName(json[0].userName);
-    setServiceName(json[0].serviceName);
-    
-    //  setServiceStatus((json.filter((servicesList) => servicesList.id == serviceId))[0].status)
+    await setServicesList(json);
+    await setUserName(json[0].userName);
+    await setServiceName(json[0].serviceName);
+    //await console.log(json.filter(json => json.id === serviceId))
     
   }
   const checkConversation = () => {
@@ -141,6 +141,7 @@ export default function AServiceDetails(props) {
   };
   useEffect(() => {
     refreshServicesList();
+    ReactTooltip.rebuild();
   }, []);
   return (
     <div>
@@ -157,7 +158,7 @@ export default function AServiceDetails(props) {
                       <Link to={"/admin/services"}> My Dashboard </Link> &gt;
                     </li>
                     <li>
-                      <Link to={"/admin/services"}>&nbsp;My Customers</Link>{" "}
+                      <Link to={"/admin/services"}>&nbsp;My Customers&nbsp;</Link>
                       &gt;
                     </li>
                     <li>&nbsp;Services Applied </li>
@@ -225,13 +226,13 @@ export default function AServiceDetails(props) {
                                 <td>{document.documentId}</td>
                                 <td>
                                   {document.fileName ? (
-                                    <Link
+                                    <Link data-tip data-for="downloadTip"
                                       to={props.myroute}
                                       onClick={() => {
                                         DownloadDocument(document.documentId);
                                       }}
                                     >
-                                      <img src="/images/download-icon.png" />
+                                      <img src="/images/download-icon.png"/>
                                       <span
                                         style={{ textDecoration: "underline" }}
                                       >
@@ -248,19 +249,19 @@ export default function AServiceDetails(props) {
                                 <td>
                                   {document.fileName ? (
                                     <>
-                                      <button
+                                      <button data-tip data-for="viewTip"
                                         onClick={() => {
                                           ViewDocument(document.documentId);
                                         }}
                                       >
                                         <img src="/images/view-icon.png" />
                                       </button>
-                                      <button
+                                      <button data-tip data-for="downloadTip"
                                         onClick={() => {
                                           DownloadDocument(document.documentId);
                                         }}
                                       >
-                                        <img src="/images/download-icon.png" />
+                                        <img src="/images/download-icon.png" data-tip data-for="downloadTip"/>
                                       </button>
                                     </>
                                   ) : (
@@ -314,6 +315,18 @@ export default function AServiceDetails(props) {
           </div>
         </div>
       </div>
+      <ReactTooltip id="uploadTip" place="right">
+        Upload Document
+      </ReactTooltip>
+      <ReactTooltip id="downloadTip" place="right">
+        Download Document
+      </ReactTooltip>
+      <ReactTooltip id="editTip" place="right">
+        Edit Document
+      </ReactTooltip>
+      <ReactTooltip id="viewTip" place="right">
+        View Document
+      </ReactTooltip>
       {isOpen && (
         <ConversationModal
           handleClose={togglePopup}
