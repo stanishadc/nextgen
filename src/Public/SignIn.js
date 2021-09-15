@@ -53,6 +53,7 @@ export default function SignIn(props) {
             .then(response => {
                 localStorage.setItem('userRole', response.data.role);
                 localStorage.setItem('userId', response.data.id);
+                localStorage.setItem('userName', response.data.name);
                 if (response.data.role === "ROLE_USER") {
                     props.history.push({
                         pathname: '/users/services',

@@ -37,19 +37,14 @@ class CheckAuth {
     isEAuthenticated() {
         return this.Eauthenticated;
     }
-    isUserAuthenticated() {
-        if (localStorage.getItem('userToken') !== null) {
-            if (localStorage.getItem('userRole') === "ROLE_ADMIN") {
-                this.Aauthenticated = true
-            }
-            if (localStorage.getItem('userRole') === "ROLE_USER") {
-                this.Uauthenticated = true
-            }
-            if (localStorage.getItem('userRole') === "ROLE_EXECUTIVE") {
-                this.Eauthenticated = true
-            }
-        }
-        return false;
+    isLogout() {
+        localStorage.removeItem('userToken');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userName');
+        this.Uauthenticated = false;
+        this.Aauthenticated = false;
+        this.Eauthenticated = false;
     }
 }
 export default new CheckAuth()

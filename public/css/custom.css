@@ -740,12 +740,6 @@ button.close.close-btn-2 {
     background-color: #1CB59C;
    
 }
-
-
-
-
-
-
 .recvied-box {
     position: relative;
     overflow: hidden;      
@@ -766,14 +760,32 @@ button.close.close-btn-2 {
     float: left;
     margin-left: 55px;
 }
-
-
+.sender-user-msg {
+    /*width: 65%;*/
+    float: right;
+    margin-left: 55px;
+}
+.sender-user-img {
+    width: 40px;
+    float: right;
+    height: 40px;
+    vertical-align: bottom;
+    bottom: 0;
+    position: absolute;
+    border-radius: 10px 0px 10px 10px ;
+    overflow: hidden;
+    margin-left: 180px;
+}
 .user-img img {
+    width: 100%;
+}
+.sender-user-img img {
     width: 100%;
 }
 .msg-box {
     background-color: #e8e8e8;
     padding: 15px;border-radius: 6px;
+    margin-right: 50px;
 }
 .msg-box p {
     font-size: 13px;
@@ -785,13 +797,12 @@ p.sent-time {
     font-size: 12px;
     font-weight: 300;
 }
-
-
 .sent-box .user-msg {
     float: right;
 }
 .sent-box p.sent-time {
     text-align: right;
+    margin-right: 50px;
 }
 .sent-box .msg-box {
     background-color: #e7f7f5;

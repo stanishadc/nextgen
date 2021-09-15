@@ -9,8 +9,8 @@ const initialFieldValues = {
 };
 export default function ConversationModal(props) {
   const history = useHistory();
-  const [values, setValues] = useState(initialFieldValues)
-  const [errors, setErrors] = useState({})
+  const [values, setValues] = useState(initialFieldValues);
+  const [errors, setErrors] = useState({});
   const [conversationList, setConversationList] = useState([]);
   const applicationAPI = () => {
     const headerconfig = {
@@ -25,11 +25,15 @@ export default function ConversationModal(props) {
             "/conversations",
           headerconfig
         ),
-        create: newRecord => axios.post(config.apiurl +
+      create: (newRecord) =>
+        axios.post(
+          config.apiurl +
             config.getconversation +
             props.userServiceId +
             "/conversations",
-          newRecord, headerconfig)
+          newRecord,
+          headerconfig
+        ),
     };
   };
   const CloseLogin = () => {
@@ -74,7 +78,8 @@ export default function ConversationModal(props) {
         }
       });
   }
-  const applyErrorClass = field => ((field in errors && errors[field] == false) ? ' form-control-danger' : '')
+  const applyErrorClass = (field) =>
+    field in errors && errors[field] == false ? " form-control-danger" : "";
   useEffect(() => {
     refreshConversationList();
   }, []);
@@ -106,45 +111,57 @@ export default function ConversationModal(props) {
               <div className="modal-body ">
                 <div className="popup-body-box">
                   {conversationList &&
-                    conversationList.map((conversions) => (
-                      <div
-                        className={
-                          conversions.senderName === "Vivek Aditya"
-                            ? "recvied-box"
-                            : "recvied-box sent-box"
-                        }
-                      >
-                        <div className="user-img">
-                          <img src="/images/send-user.png" />
-                        </div>
-                        <div className="user-msg">
-                          <div className="msg-box">
-                            <p>{conversions.message}</p>
+                    conversationList.map((conversions) =>
+                      conversions.senderName ===
+                      localStorage.getItem("userName") ? (
+                        <div className="recvied-box">
+                          <div className="user-img">
+                            <img src="/images/send-user.png" />
                           </div>
-                          <p className="sent-time">
-                            Sent {conversions.createdAt}
-                          </p>
+                          <div className="user-msg">
+                            <div className="msg-box">
+                              <p>{conversions.message}</p>
+                            </div>
+                            <p className="sent-time">
+                              Sent {conversions.createdAt}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ) : (
+                        <div className="recvied-box sent-box">
+                          <div className="user-msg">
+                            <div className="msg-box">
+                              <p>{conversions.message}</p>
+                            </div>
+                            <div className="sender-user-img">
+                              <img src="/images/send-user.png" />
+                            </div>
+                            <p className="sent-time">
+                              Sent {conversions.createdAt}
+                            </p>
+                          </div>
+                        </div>
+                      )
+                    )}
                 </div>
               </div>
               <form onSubmit={handleSubmit} autoComplete="off" noValidate>
-              <div className="modal-footer">                
+                <div className="modal-footer">
                   <div className="write-message-box">
                     <input
                       type="text"
-                      className={applyErrorClass('message')}
+                      className={applyErrorClass("message")}
                       placeholder="Type a message..."
                       value={values.message}
                       onChange={handleInputChange}
-                      name="message" id="message"
+                      name="message"
+                      id="message"
                     />
                     <button className="submit-btn-msg">
                       <img src="/images/send-button.png" />
                     </button>
-                  </div>                
-              </div>
+                  </div>
+                </div>
               </form>
               {/* <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> */}
             </div>
