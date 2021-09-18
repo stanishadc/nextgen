@@ -93,21 +93,6 @@ export default function EServiceDetails(props) {
         documentId,
       true
     );
-    xhr.onreadystatechange = function() {
-        if(xhr.readyState == 4) {
-            if(xhr.status == 200) {
-                console.log(typeof xhr.response); // should be a blob
-            } else if(xhr.responseText != "") {
-                console.log(xhr.responseText);
-            }
-        } else if(xhr.readyState == 2) {
-            if(xhr.status == 200) {
-                xhr.responseType = "blob";
-            } else {
-                xhr.responseType = "text";
-            }
-        }
-    };
     xhr.setRequestHeader(
       "Authorization",
       `Bearer ${localStorage.getItem("userToken")}`
@@ -223,8 +208,6 @@ export default function EServiceDetails(props) {
                             <td>{document.documentId}</td>
                             <td>
                               {document.fileName ? (
-                                <span>{document.name}</span>
-                              ) : (
                                 <Link
                                   to={props.myroute}
                                   onClick={() => {
@@ -240,28 +223,53 @@ export default function EServiceDetails(props) {
                                     {document.name}
                                   </span>
                                 </Link>
+                              ) : (
+                                <span>{document.name}</span>
                               )}
                             </td>
                             <td>{document.createdAt}</td>
                             <td>
-                              <button
-                                data-tip
-                                data-for="viewTip"
-                                onClick={() => {
-                                  ViewDocument(document.documentId);
-                                }}
-                              >
-                                <img src="/images/view-icon.png" />
-                              </button>
-                              <button
-                                data-tip
-                                data-for="downloadTip"
-                                onClick={() => {
-                                  DownloadDocument(document.documentId);
-                                }}
-                              >
-                                <img src="/images/download-icon.png" />
-                              </button>
+                              {document.fileName ? (
+                                <>
+                                  <button
+                                    data-tip
+                                    data-for="viewTip"
+                                    onClick={() => {
+                                      ViewDocument(document.documentId);
+                                    }}
+                                  >
+                                    <img src="/images/view-icon.png" />
+                                  </button>
+                                  <button
+                                    data-tip
+                                    data-for="downloadTip"
+                                    onClick={() => {
+                                      DownloadDocument(document.documentId);
+                                    }}
+                                  >
+                                    <img
+                                      src="/images/download-icon.png"
+                                      data-tip
+                                      data-for="downloadTip"
+                                    />
+                                  </button>
+                                </>
+                              ) : (
+                                <>
+                                  <button className="button">
+                                    <img
+                                      src="/images/view-icon.png"
+                                      className="disabled-icon"
+                                    />
+                                  </button>
+                                  <button className="button">
+                                    <img
+                                      src="/images/download-icon.png"
+                                      className="disabled-icon"
+                                    />
+                                  </button>
+                                </>
+                              )}
                             </td>
                           </tr>
                         ))}
