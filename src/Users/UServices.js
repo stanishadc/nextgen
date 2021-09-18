@@ -79,10 +79,10 @@ export default function UServices(props) {
                     </thead>
                     <tbody>
                       {servicesList &&
-                        servicesList.map((service) => (
+                        servicesList.map((service, index) => (
                           <tr>
                             <td scope="row" key={service.id}>
-                              1
+                              {index+1}
                             </td>
                             <td>{service.serviceCode}</td>
                             <td>{service.serviceName}</td>

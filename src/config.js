@@ -11,5 +11,6 @@ module.exports={
     addconversation:'user/services/',
     getconversation:'user/services/',
     getuser:'user/me',
-    updateservice:'user/services/'
+    updateservice:'user/services/',
+    getuserservice:'user/services/'
   }

@@ -6,13 +6,13 @@ import Sidebar from "../Common/Sidebar";
 import { handleError, handleSuccess } from "../Common/CustomAlerts";
 import Header from "../Common/Header";
 import ConversationModal from "../Common/ConversationModal";
-import ReactTooltip from 'react-tooltip';
+import ReactTooltip from "react-tooltip";
 
 export default function EServiceDetails(props) {
   const history = useHistory();
   const [isOpen, setIsOpen] = useState(false);
   const [servicesList, setServicesList] = useState([]);
-  const [serviceId, setServiceId] = useState([]);
+  const [serviceIds, setServiceIds] = useState(null);
   const [userName, setUserName] = useState([]);
   const [serviceName, setServiceName] = useState([]);
   const applicationAPI = () => {
@@ -20,16 +20,11 @@ export default function EServiceDetails(props) {
       headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
     };
     return {
-      fetchAll: () =>
-        axios.get(config.apiurl + config.userservices, headerconfig),
-      downloadDocument: (id) =>
-        axios.get(
-          config.apiurl + config.filedownload + serviceId + "/documents/" + id,
-          headerconfig
-        ),
+      fetchAll: (sId) =>
+        axios.get(config.apiurl + config.getuserservice + sId, headerconfig),
       assignExecutive: (updateData) =>
         axios.put(
-          config.apiurl + config.updateservice + serviceId,
+          config.apiurl + config.updateservice + serviceIds,
           updateData,
           headerconfig
         ),
@@ -40,14 +35,14 @@ export default function EServiceDetails(props) {
   };
   function refreshServicesList() {
     var m = window.location.pathname.split("/");
-    setServiceId(m[4]);
+    setServiceIds(m[4]);
     applicationAPI()
-      .fetchAll()
+      .fetchAll(m[4])
       .then(
         (res) => (
-          setServicesList(res.data),
-          setUserName(res.data[0].userName),
-          setServiceName(res.data[0].serviceName)
+          setServicesList(res.data.documents),
+          setUserName(res.data.userName),
+          setServiceName(res.data.serviceName)
         )
       )
       .catch(function (error) {
@@ -61,10 +56,21 @@ export default function EServiceDetails(props) {
       togglePopup();
     }
   };
-  function ViewDocument(documentId) {    
+  function ViewDocument(documentId) {
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", config.apiurl + config.filedownload + serviceId + "/documents/" + documentId, true);
-    xhr.setRequestHeader("Authorization", `Bearer ${localStorage.getItem("userToken")}`)
+    xhr.open(
+      "GET",
+      config.apiurl +
+        config.filedownload +
+        serviceIds +
+        "/documents/" +
+        documentId,
+      true
+    );
+    xhr.setRequestHeader(
+      "Authorization",
+      `Bearer ${localStorage.getItem("userToken")}`
+    );
     xhr.responseType = "arraybuffer";
     xhr.onload = function (e) {
       if (this.status == 200) {
@@ -78,8 +84,34 @@ export default function EServiceDetails(props) {
   }
   function DownloadDocument(documentId) {
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", config.apiurl + config.filedownload + serviceId + "/documents/" + documentId, true);
-    xhr.setRequestHeader("Authorization", `Bearer ${localStorage.getItem("userToken")}`)
+    xhr.open(
+      "GET",
+      config.apiurl +
+        config.filedownload +
+        serviceIds +
+        "/documents/" +
+        documentId,
+      true
+    );
+    xhr.onreadystatechange = function() {
+        if(xhr.readyState == 4) {
+            if(xhr.status == 200) {
+                console.log(typeof xhr.response); // should be a blob
+            } else if(xhr.responseText != "") {
+                console.log(xhr.responseText);
+            }
+        } else if(xhr.readyState == 2) {
+            if(xhr.status == 200) {
+                xhr.responseType = "blob";
+            } else {
+                xhr.responseType = "text";
+            }
+        }
+    };
+    xhr.setRequestHeader(
+      "Authorization",
+      `Bearer ${localStorage.getItem("userToken")}`
+    );
     xhr.responseType = "arraybuffer";
     xhr.onload = function (e) {
       if (this.status == 200) {
@@ -96,15 +128,15 @@ export default function EServiceDetails(props) {
     e.preventDefault();
     const formData = new FormData();
     formData.append("status", "COMPLETED");
-    formData.append("serviceId", serviceId);
-    formData.append("executiveId", localStorage.getItem('userId'));
+    formData.append("serviceId", serviceIds);
+    formData.append("executiveId", localStorage.getItem("userId"));
     updateService(formData);
   };
   const updateService = (formData) => {
     applicationAPI()
       .assignExecutive(formData)
       .then((res) => {
-        handleSuccess("Successfully Submitted")
+        handleSuccess("Successfully Submitted");
         props.handleEClose();
       })
       .catch(function (error) {
@@ -135,7 +167,7 @@ export default function EServiceDetails(props) {
                     <li>
                       <Link to={"/executive/services"}>
                         &nbsp;Services Applied
-                      </Link>{" "}
+                      </Link>
                       &gt;
                     </li>
                     <li>&nbsp;Services Applied </li>
@@ -181,59 +213,59 @@ export default function EServiceDetails(props) {
                         </th>
                       </tr>
                     </thead>
-                    {servicesList &&
-                      servicesList
-                        .filter((servicesList) => servicesList.id == serviceId)
-                        .map((documentList) => (
-                          <tbody key={documentList.id}>
-                            {documentList.documents.map((document, index) => (
-                              <tr>
-                                <td scope="row" key={document.id}>
-                                  {index + 1}
-                                </td>
-                                <td>{document.documentId}</td>
-                                <td>
-                                  {document.fileName ? (
-                                    <span>{document.name}</span>
-                                  ) : (
-                                    <Link
-                                      to={props.myroute}
-                                      onClick={() => {
-                                        DownloadDocument(document.documentId);
-                                      }}
-                                    >
-                                      <img src="/images/download-icon.png" data-tip data-for="downloadTip"/>
-                                      <span
-                                        style={{ textDecoration: "underline" }}
-                                      >
-                                        {document.name}
-                                      </span>
-                                    </Link>
-                                  )}
-                                </td>
-                                <td>
-                                  {document.createdAt}
-                                </td>
-                                <td>
-                                  <button data-tip data-for="viewTip"
-                                    onClick={() => {
-                                      ViewDocument(document.documentId);
-                                    }}
-                                  >
-                                    <img src="/images/view-icon.png" />
-                                  </button>
-                                  <button data-tip data-for="downloadTip"
-                                    onClick={() => {
-                                      DownloadDocument(document.documentId);
-                                    }}
-                                  >
-                                    <img src="/images/download-icon.png" />
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
+                    <tbody>
+                      {servicesList &&
+                        servicesList.map((document, index) => (
+                          <tr key={document.id}>
+                            <td scope="row" key={document.id}>
+                              {index + 1}
+                            </td>
+                            <td>{document.documentId}</td>
+                            <td>
+                              {document.fileName ? (
+                                <span>{document.name}</span>
+                              ) : (
+                                <Link
+                                  to={props.myroute}
+                                  onClick={() => {
+                                    DownloadDocument(document.documentId);
+                                  }}
+                                >
+                                  <img
+                                    src="/images/download-icon.png"
+                                    data-tip
+                                    data-for="downloadTip"
+                                  />
+                                  <span style={{ textDecoration: "underline" }}>
+                                    {document.name}
+                                  </span>
+                                </Link>
+                              )}
+                            </td>
+                            <td>{document.createdAt}</td>
+                            <td>
+                              <button
+                                data-tip
+                                data-for="viewTip"
+                                onClick={() => {
+                                  ViewDocument(document.documentId);
+                                }}
+                              >
+                                <img src="/images/view-icon.png" />
+                              </button>
+                              <button
+                                data-tip
+                                data-for="downloadTip"
+                                onClick={() => {
+                                  DownloadDocument(document.documentId);
+                                }}
+                              >
+                                <img src="/images/download-icon.png" />
+                              </button>
+                            </td>
+                          </tr>
                         ))}
+                    </tbody>
                   </table>
                 </div>
               </div>

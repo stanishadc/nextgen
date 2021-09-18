@@ -6,15 +6,15 @@ import Sidebar from "../Common/Sidebar";
 import { handleSuccess, handleError } from "../Common/CustomAlerts";
 import Header from "../Common/Header";
 import Conversation from "../Common/ConversationModal";
-import ReactTooltip from 'react-tooltip';
+import ReactTooltip from "react-tooltip";
 
 export default function UServiceDetails(props) {
   const [isOpen, setIsOpen] = useState(false);
   const [servicesList, setServicesList] = useState([]);
-  const [serviceId, setServiceId] = useState(0);
   const [serviceName, setServiceName] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [serviceStatus, setServiceStatus] = useState(null);
+  const [serviceIds, setServiceIds] = useState(null);
   const applicationAPI = () => {
     const headerconfig = {
       headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
@@ -26,15 +26,18 @@ export default function UServiceDetails(props) {
       },
     };
     return {
-      fetchAll: () =>
-        axios.get(config.apiurl + config.userservices, headerconfig),
-      uploadFile: (id, newRecord) =>
+      fetchAll: (serviceId) =>
+        axios.get(
+          config.apiurl + config.getuserservice + serviceId,
+          headerconfig
+        ),
+      uploadFile: (id, serviceId, newRecord) =>
         axios.post(
           config.apiurl + config.fileupload + serviceId + "/documents/" + id,
           newRecord,
           headerconfig
         ),
-      downloadDocument: (id) =>
+      downloadDocument: (id, serviceId) =>
         axios.get(
           config.apiurl + config.filedownload + serviceId + "/documents/" + id,
           fileHeaderconfig
@@ -50,19 +53,28 @@ export default function UServiceDetails(props) {
     }
   };
   function userFileUpload(e, documentId) {
+    var m = window.location.pathname.split("/");
     if (e.target.files && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
       const formData = new FormData();
       formData.append("documentId", documentId);
-      formData.append("userServiceId", serviceId);
+      formData.append("userServiceId", m[4]);
       formData.append("file", e.target.files[0]);
       uploadData(documentId, formData);
     }
   }
-  function ViewDocument(documentId) {    
+  function ViewDocument(documentId) {
+    var m = window.location.pathname.split("/");
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", config.apiurl + config.filedownload + serviceId + "/documents/" + documentId, true);
-    xhr.setRequestHeader("Authorization", `Bearer ${localStorage.getItem("userToken")}`)
+    xhr.open(
+      "GET",
+      config.apiurl + config.filedownload + m[4] + "/documents/" + documentId,
+      true
+    );
+    xhr.setRequestHeader(
+      "Authorization",
+      `Bearer ${localStorage.getItem("userToken")}`
+    );
     xhr.responseType = "arraybuffer";
     xhr.onload = function (e) {
       if (this.status == 200) {
@@ -75,9 +87,17 @@ export default function UServiceDetails(props) {
     xhr.send();
   }
   function DownloadDocument(documentId) {
+    var m = window.location.pathname.split("/");
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", config.apiurl + config.filedownload + serviceId + "/documents/" + documentId, true);
-    xhr.setRequestHeader("Authorization", `Bearer ${localStorage.getItem("userToken")}`)
+    xhr.open(
+      "GET",
+      config.apiurl + config.filedownload + m[4] + "/documents/" + documentId,
+      true
+    );
+    xhr.setRequestHeader(
+      "Authorization",
+      `Bearer ${localStorage.getItem("userToken")}`
+    );
     xhr.responseType = "arraybuffer";
     xhr.onload = function (e) {
       if (this.status == 200) {
@@ -91,8 +111,9 @@ export default function UServiceDetails(props) {
     xhr.send();
   }
   const uploadData = (documentId, formData) => {
+    var m = window.location.pathname.split("/");
     applicationAPI()
-      .uploadFile(documentId, formData)
+      .uploadFile(documentId, m[4], formData)
       .then((res) => {
         if (res.status == 200) {
           handleSuccess("File uploaded successfully");
@@ -107,15 +128,17 @@ export default function UServiceDetails(props) {
         }
       });
   };
-  
+
   function refreshServicesList() {
     var m = window.location.pathname.split("/");
-    setServiceId(m[4]);
+    setServiceIds(m[4]);
     applicationAPI()
-      .fetchAll()
+      .fetchAll(m[4])
       .then(
         (res) => (
-          setServicesList(res.data), setServiceName(res.data[0].serviceName)
+          setServicesList(res.data.documents),
+          setServiceName(res.data.serviceName),
+          setServiceStatus(res.data.enableMarkAsDone)
         )
       )
       .catch(function (error) {
@@ -160,20 +183,18 @@ export default function UServiceDetails(props) {
                 </div>
               </div>
               <div className="col-md-4">
-              {serviceStatus !== "WIP" ? (
-                 <Link className="sort-btn active">
+                {serviceStatus === true ? (
+                  <Link className="sort-btn active">
                     <img src="/images/checked.png" /> Mark As Done
-                  </Link>                  
-                ) : (
-                 <Link
+                  </Link>
+                ) : null}
+                <Link
                   className="startdiscussion-btn"
                   to={props.myroute}
                   onClick={checkConversation}
                 >
                   <img src="/images/comments.png" /> Start Discussion
                 </Link>
-                )}
-                
               </div>
             </div>
             <div className="clearfix" />
@@ -195,98 +216,98 @@ export default function UServiceDetails(props) {
                       </tr>
                     </thead>
                     {servicesList &&
-                      servicesList
-                        .filter((servicesList) => servicesList.id == serviceId)
-                        .map((documentList) => (
-                          <tbody key={documentList.id}>
-                            {documentList.documents.map((document, index) => (
-                              <tr key={document.id}>
-                                <td scope="row">{index + 1}</td>
-                                <td>{document.documentId}</td>
-                                <td>
-                                  {document.fileName ? (
-                                    <Link to={props.myroute}>
-                                      <img src="/images/download-icon.png" />
-                                      <span
-                                        style={{ textDecoration: "underline" }}
-                                      >
-                                        {document.name}
-                                      </span>
-                                    </Link>
-                                  ) : (
-                                    <span>{document.name}</span>
-                                  )}
-                                </td>
-                                <td>
-                                  {document.createdAt}
-                                </td>
-                                <td>
-                                  {document.fileName ? (
-                                    <>
-                                      <button data-tip data-for="viewTip"
-                                        onClick={() => {
-                                          ViewDocument(document.documentId);
-                                        }}
-                                      >
-                                        <img src="/images/view-icon.png" />
-                                      </button>
-                                      <button data-tip data-for="downloadTip"
-                                        onClick={() => {
-                                          DownloadDocument(document.documentId);
-                                        }}
-                                      >
-                                        <img src="/images/download-icon.png" />
-                                      </button>
-                                      <label>
-                                        <input data-tip data-for="uploadTip"
-                                          className="button"
-                                          type="file"
-                                          onChange={(e) => {
-                                            userFileUpload(
-                                              e,
-                                              document.documentId
-                                            );
-                                          }}
-                                          style={{ display: "none" }}
-                                        ></input>
-                                        <img src="/images/edit-icon.png" data-tip data-for="editTip"/>
-                                      </label>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <button className="button">
-                                        <img
-                                          src="/images/view-icon.png"
-                                          className="disabled-icon"
-                                        />
-                                      </button>
-                                      <label>
-                                        <input
-                                          className="button"
-                                          type="file"
-                                          onChange={(e) => {
-                                            userFileUpload(
-                                              e,
-                                              document.documentId
-                                            );
-                                          }}
-                                          style={{ display: "none" }}
-                                        ></input>
-                                        <img src="/images/upload-icon.png" data-tip data-for="uploadTip"/>
-                                      </label>
-                                      <button className="button">
-                                        <img
-                                          src="/images/edit-icon.png"
-                                          className="disabled-icon"
-                                        />
-                                      </button>
-                                    </>
-                                  )}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        ))}
+                      servicesList.map((document, index) => (
+                        <tbody>
+                          <tr key={document.id}>
+                            <td scope="row">{index + 1}</td>
+                            <td>{document.documentId}</td>
+                            <td>
+                              {document.fileName ? (
+                                <Link to={props.myroute}>
+                                  <img src="/images/download-icon.png" />
+                                  <span style={{ textDecoration: "underline" }}>
+                                    {document.name}
+                                  </span>
+                                </Link>
+                              ) : (
+                                <span>{document.name}</span>
+                              )}
+                            </td>
+                            <td>{document.createdAt}</td>
+                            <td>
+                              {document.fileName ? (
+                                <>
+                                  <button
+                                    data-tip
+                                    data-for="viewTip"
+                                    onClick={() => {
+                                      ViewDocument(document.documentId);
+                                    }}
+                                  >
+                                    <img src="/images/view-icon.png" />
+                                  </button>
+                                  <button
+                                    data-tip
+                                    data-for="downloadTip"
+                                    onClick={() => {
+                                      DownloadDocument(document.documentId);
+                                    }}
+                                  >
+                                    <img src="/images/download-icon.png" />
+                                  </button>
+                                  <label>
+                                    <input
+                                      data-tip
+                                      data-for="uploadTip"
+                                      className="button"
+                                      type="file"
+                                      onChange={(e) => {
+                                        userFileUpload(e, document.documentId);
+                                      }}
+                                      style={{ display: "none" }}
+                                    ></input>
+                                    <img
+                                      src="/images/edit-icon.png"
+                                      data-tip
+                                      data-for="editTip"
+                                    />
+                                  </label>
+                                </>
+                              ) : (
+                                <>
+                                  <button className="button">
+                                    <img
+                                      src="/images/view-icon.png"
+                                      className="disabled-icon"
+                                    />
+                                  </button>
+                                  <label>
+                                    <input
+                                      className="button"
+                                      type="file"
+                                      onChange={(e) => {
+                                        userFileUpload(e, document.documentId);
+                                      }}
+                                      style={{ display: "none" }}
+                                    ></input>
+                                    <img
+                                      src="/images/upload-icon.png"
+                                      data-tip
+                                      data-for="uploadTip"
+                                    />
+                                  </label>
+                                  <button className="button">
+                                    <img
+                                      src="/images/edit-icon.png"
+                                      className="disabled-icon"
+                                    />
+                                  </button>
+                                </>
+                              )}
+                            </td>
+                          </tr>
+                        </tbody>
+                      ))}
                   </table>
                 </div>
               </div>
@@ -333,7 +354,7 @@ export default function UServiceDetails(props) {
         View Document
       </ReactTooltip>
       {isOpen && (
-        <Conversation handleClose={togglePopup} userServiceId={serviceId} />
+        <Conversation handleClose={togglePopup} userServiceId={serviceIds} />
       )}
     </div>
   );
