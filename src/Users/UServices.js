@@ -8,6 +8,10 @@ import Header from "../Common/Header";
 
 export default function UServices(props) {
   const [servicesList, setServicesList] = useState([]);
+  const [currentpage, setcurrentpage] = useState(0);
+  const [perpage, setperpage] = useState(5);
+  const [totalrecords, settotalrecords] = useState(0);
+  const [noofpages, setnoofpages] = useState(0);
   const applicationAPI = () => {
     const headerconfig = {
       headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
@@ -15,11 +19,26 @@ export default function UServices(props) {
     return {
       fetchAll: () =>
         axios.get(config.apiurl + config.userservices, headerconfig),
+      fetchPerPage: (cp, pp) =>
+        axios.get(
+          config.apiurl + config.userservices + `?pageNo=${cp}&pageSize=${pp}`,
+          headerconfig
+        )
     };
   };
-  function refreshServicesList() {
+  function GetAllServices() {
     applicationAPI()
       .fetchAll()
+      .then((res) => calculatepagination(res.data))
+      .catch(function (error) {
+        if (error.response) {
+          handleError(error.response.data.message);
+        }
+      });
+  }
+  function refreshServicesList(cp) {
+    applicationAPI()
+      .fetchPerPage(cp, perpage)
       .then((res) => setServicesList(res.data))
       .catch(function (error) {
         if (error.response) {
@@ -27,8 +46,48 @@ export default function UServices(props) {
         }
       });
   }
+  function calculatepagination(DataList) {
+    settotalrecords(DataList.length);
+    setnoofpages(Math.round(DataList.length / perpage));
+  }
+  function updateShowEntries() {
+    return (
+      <div className="col-md-6">
+        <p className="showing-entries">
+          Showing
+          <span>
+            &nbsp;
+             {currentpage} to {noofpages} of {totalrecords}
+          </span>
+          &nbsp; entries
+        </p>
+      </div>
+    );
+  }
+  function updateCurrentPage(e) {
+    setcurrentpage(Number(e.target.id));
+    refreshServicesList(Number(e.target.id));
+  }
+  function updatePagination() {
+    const list = [];
+    for (var i = 0; i < noofpages; i++) {
+      list.push(
+        <li className="page-item active">
+          <Link
+            className="page-link"
+            onClick={(e) => updateCurrentPage(e, i)}
+            id={i}
+          >
+            {Number(i) + 1}
+          </Link>
+        </li>
+      );
+    }
+    return <ul className="pagination justify-content-end">{list}</ul>;
+  }
   useEffect(() => {
-    refreshServicesList();
+     refreshServicesList(currentpage);
+    GetAllServices();
   }, []);
   return (
     <div>
@@ -121,27 +180,14 @@ export default function UServices(props) {
             </div>
             <div className="clearfix" />
             <div className="row mart40">
-              <div className="col-md-6">
-                <p className="showing-entries">
-                  Showing <span> 1 to 1 of 1</span> entries
-                </p>
-              </div>
+              {updateShowEntries()}
               <div className="col-md-6">
                 <div className="list-box-p">
                   <div className="pagination-list-box">
                     <ul className="pagination justify-content-end">
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          <i className="fa  fa-caret-left" />
-                        </a>
-                      </li>
-                      <li className="page-item active">
-                        <a className="page-link" href="javascript:void(0);">
-                          1
-                        </a>
-                      </li>                      
+                      {updatePagination()}
                     </ul>
-                  </div>                 
+                  </div>
                 </div>
               </div>
             </div>

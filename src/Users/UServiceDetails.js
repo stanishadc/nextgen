@@ -215,9 +215,9 @@ export default function UServiceDetails(props) {
                         </th>
                       </tr>
                     </thead>
+                    <tbody>
                     {servicesList &&
-                      servicesList.map((document, index) => (
-                        <tbody>
+                      servicesList.map((document, index) => (                        
                           <tr key={document.id}>
                             <td scope="row">{index + 1}</td>
                             <td>{document.documentId}</td>
@@ -306,8 +306,8 @@ export default function UServiceDetails(props) {
                               )}
                             </td>
                           </tr>
-                        </tbody>
                       ))}
+                      </tbody>
                   </table>
                 </div>
               </div>

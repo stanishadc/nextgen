@@ -8,8 +8,8 @@ import Header from "../Common/Header";
 
 export default function AServices(props) {
   const [servicesList, setServicesList] = useState([]);
-  const [currentpage, setcurrentpage] = useState(1);
-  const [perpage, setperpage] = useState(5);  
+  const [currentpage, setcurrentpage] = useState(0);
+  const [perpage, setperpage] = useState(10);
   const [totalrecords, settotalrecords] = useState(0);
   const [noofpages, setnoofpages] = useState(0);
 
@@ -24,7 +24,7 @@ export default function AServices(props) {
         axios.get(
           config.apiurl + config.userservices + `?pageNo=${cp}&pageSize=${pp}`,
           headerconfig
-        ),
+        )
     };
   };
   function GetAllServices() {
@@ -57,24 +57,28 @@ export default function AServices(props) {
         <p className="showing-entries">
           Showing
           <span>
+            &nbsp;
             {currentpage} to {noofpages} of {totalrecords}
           </span>
-          entries
+          &nbsp; entries
         </p>
       </div>
     );
   }
   function updateCurrentPage(e) {
-    console.log(e.target.innerText);
-    setcurrentpage(Number(e.target.innerText));
-    refreshServicesList(Number(e.target.innerText));
+    setcurrentpage(Number(e.target.id));
+    refreshServicesList(Number(e.target.id));
   }
   function updatePagination() {
     const list = [];
     for (var i = 0; i < noofpages; i++) {
       list.push(
         <li className="page-item active">
-          <Link className="page-link" onClick={(e) => updateCurrentPage(e, i)}>
+          <Link
+            className="page-link"
+            onClick={(e) => updateCurrentPage(e, i)}
+            id={i}
+          >
             {Number(i) + 1}
           </Link>
         </li>
@@ -82,7 +86,7 @@ export default function AServices(props) {
     }
     return <ul className="pagination justify-content-end">{list}</ul>;
   }
-  useEffect(() => {    
+  useEffect(() => {
     refreshServicesList(currentpage);
     GetAllServices();
   }, []);

@@ -1,52 +1,53 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-export default function PaginationTool(props) {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [todosPerPage, setTodosPerPage] = useState(3);
-  const [todos, setTodos] = useState([
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "f",
-    "g",
-    "h",
-    "i",
-    "j",
-    "k",
-  ]);
-  const handleClick = (event) => {
-    setCurrentPage(Number(event.target.id));
-  };
-  const indexOfLastTodo = currentPage * todosPerPage;
-  const indexOfFirstTodo = indexOfLastTodo - todosPerPage;
-  const currentTodos = todos.slice(indexOfFirstTodo, indexOfLastTodo);
-  const renderTodos = currentTodos.map((todo, index) => {
-    return <li key={index}>{todo}</li>;
-  });
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(todos.length / todosPerPage); i++) {
-    pageNumbers.push(i);
+
+export default function Pagination(props) {
+  const [currentpage, setcurrentpage] = useState(1);
+  const [perpage, setperpage] = useState(5);
+  const [totalrecords, settotalrecords] = useState(0);
+  const [noofpages, setnoofpages] = useState(0);
+  function calculatepagination(DataList) {
+    settotalrecords(DataList.length);
+    setnoofpages(Math.round(DataList.length / perpage));
   }
-  const renderPageNumbers = pageNumbers.map((number) => {
+  function updateShowEntries() {
     return (
-      <li className="page-item" key={number} id={number} onClick={handleClick}>
-          {number}
-          <i className="fa fa-caret-left" />
-      </li>
-    );
-  });
-  return (
-    <div>
       <div className="col-md-6">
-        <ul>{renderTodos}</ul>
+        <p className="showing-entries">
+          Showing
+          <span>
+            {currentpage} to {noofpages} of {totalrecords}
+          </span>
+          entries
+        </p>
       </div>
+    );
+  }
+  function updateCurrentPage(e) {
+    console.log(e.target.innerText);
+    setcurrentpage(Number(e.target.innerText));
+  }
+  function updatePagination() {
+    const list = [];
+    for (var i = 0; i < noofpages; i++) {
+      list.push(
+        <li className="page-item active">
+          <Link className="page-link" onClick={(e) => updateCurrentPage(e, i)}>
+            {Number(i) + 1}
+          </Link>
+        </li>
+      );
+    }
+    return <ul className="pagination justify-content-end">{list}</ul>;
+  }
+  return (
+    <div className="row mart40">
+      {updateShowEntries()}
       <div className="col-md-6">
         <div className="list-box-p">
           <div className="pagination-list-box">
             <ul className="pagination justify-content-end">
-              {renderPageNumbers}
+              {updatePagination()}
             </ul>
           </div>
         </div>

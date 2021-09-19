@@ -15,6 +15,10 @@ export default function EServiceDetails(props) {
   const [serviceIds, setServiceIds] = useState(null);
   const [userName, setUserName] = useState([]);
   const [serviceName, setServiceName] = useState([]);
+  const [currentpage, setcurrentpage] = useState(0);
+  const [perpage, setperpage] = useState(10);
+  const [totalrecords, settotalrecords] = useState(0);
+  const [noofpages, setnoofpages] = useState(0);
   const applicationAPI = () => {
     const headerconfig = {
       headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
@@ -22,7 +26,15 @@ export default function EServiceDetails(props) {
     return {
       fetchAll: (sId) =>
         axios.get(config.apiurl + config.getuserservice + sId, headerconfig),
-      assignExecutive: (updateData) =>
+      fetchPerPage: (cp, pp, sId) =>
+        axios.get(
+          config.apiurl +
+            config.getuserservice +
+            sId +
+            `?pageNo=${cp}&pageSize=${pp}`,
+          headerconfig
+        ),
+      updateETaskStatus: (updateData) =>
         axios.put(
           config.apiurl + config.updateservice + serviceIds,
           updateData,
@@ -34,15 +46,17 @@ export default function EServiceDetails(props) {
     setIsOpen(!isOpen);
   };
   function refreshServicesList() {
-    var m = window.location.pathname.split("/");
+     var m = window.location.pathname.split("/");
     setServiceIds(m[4]);
     applicationAPI()
-      .fetchAll(m[4])
+      .fetchPerPage(cp, perpage, m[4])
       .then(
         (res) => (
-          setServicesList(res.data.documents),
+          calculatepagination(res.data.documents),
           setUserName(res.data.userName),
-          setServiceName(res.data.serviceName)
+          setServiceName(res.data.serviceName),
+          setServiceStatus(res.data.status),
+          setServicesList(res.data.documents)
         )
       )
       .catch(function (error) {
@@ -50,6 +64,44 @@ export default function EServiceDetails(props) {
           handleError(error.response.data.message);
         }
       });
+  }
+  function calculatepagination(DataList) {
+    settotalrecords(DataList.length);
+    setnoofpages(Math.round(DataList.length / perpage));
+  }
+  function updateShowEntries() {
+    return (
+      <div className="col-md-6">
+        <p className="showing-entries">
+          Showing
+          <span>
+            {currentpage} to {noofpages} of {totalrecords}
+          </span>
+          entries
+        </p>
+      </div>
+    );
+  }
+  function updateCurrentPage(e) {
+    setcurrentpage(Number(e.target.id));
+    refreshServicesList(Number(e.target.id));
+  }
+  function updatePagination() {
+    const list = [];
+    for (var i = 0; i < noofpages; i++) {
+      list.push(
+        <li className="page-item active">
+          <Link
+            className="page-link"
+            onClick={(e) => updateCurrentPage(e, i)}
+            id={i}
+          >
+            {Number(i) + 1}
+          </Link>
+        </li>
+      );
+    }
+    return <ul className="pagination justify-content-end">{list}</ul>;
   }
   const checkConversation = () => {
     {
@@ -119,7 +171,7 @@ export default function EServiceDetails(props) {
   };
   const updateService = (formData) => {
     applicationAPI()
-      .assignExecutive(formData)
+      .updateETaskStatus(formData)
       .then((res) => {
         handleSuccess("Successfully Submitted");
         props.handleEClose();
@@ -132,7 +184,8 @@ export default function EServiceDetails(props) {
       });
   };
   useEffect(() => {
-    refreshServicesList();
+     refreshServicesList(currentpage);
+    //GetAllServices();
     ReactTooltip.rebuild();
   }, []);
   return (
@@ -280,25 +333,12 @@ export default function EServiceDetails(props) {
             </div>
             <div className="clearfix" />
             <div className="row mart40">
-              <div className="col-md-6">
-                <p className="showing-entries">
-                  Showing <span> 1 to 1 of 1</span> entries
-                </p>
-              </div>
+              {updateShowEntries()}
               <div className="col-md-6">
                 <div className="list-box-p">
                   <div className="pagination-list-box">
                     <ul className="pagination justify-content-end">
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          <i className="fa  fa-caret-left" />
-                        </a>
-                      </li>
-                      <li className="page-item active">
-                        <a className="page-link" href="javascript:void(0);">
-                          1
-                        </a>
-                      </li>
+                      {updatePagination()}
                     </ul>
                   </div>
                 </div>

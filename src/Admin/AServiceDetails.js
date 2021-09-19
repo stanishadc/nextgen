@@ -8,7 +8,7 @@ import Header from "../Common/Header";
 import ConversationModal from "../Common/ConversationModal";
 import ExecutiveModal from "../Common/ExecutiveModal";
 import ReactTooltip from "react-tooltip";
-
+import PaginationTool from "../Common/Pagination";
 const initialServiceValues = {
   userServiceId: 0,
   status: "",
@@ -19,12 +19,16 @@ export default function AServiceDetails(props) {
   const [isOpen, setIsOpen] = useState(false);
   const [isEOpen, setIsEOpen] = useState(false);
   const [servicesList, setServicesList] = useState([]);
-  const [serviceId, setServiceId] = useState([]);
+  const [serviceIds, setServiceIds] = useState([]);
   const [userName, setUserName] = useState([]);
   const [serviceName, setServiceName] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [createFile, setCreateFile] = useState(null);
   const [serviceStatus, setServiceStatus] = useState(null);
+  const [currentpage, setcurrentpage] = useState(0);
+  const [perpage, setperpage] = useState(10);
+  const [totalrecords, settotalrecords] = useState(0);
+  const [noofpages, setnoofpages] = useState(0);
 
   const applicationAPI = () => {
     const headerconfig = {
@@ -33,14 +37,20 @@ export default function AServiceDetails(props) {
     return {
       fetchAll: () =>
         axios.get(
-          config.apiurl + config.getuserservice + serviceId,
+          config.apiurl + config.getuserservice + serviceIds,
           headerconfig
         ),
-      uploadFile: (newRecord) =>
-        axios.post(config.apiurl + config.fileupload, newRecord, headerconfig),
+      fetchPerPage: (cp, pp, sId) =>
+        axios.get(
+          config.apiurl +
+            config.getuserservice +
+            sId +
+            `?pageNo=${cp}&pageSize=${pp}`,
+          headerconfig
+        ),
       downloadDocument: (id) =>
         axios.get(
-          config.apiurl + config.filedownload + serviceId + "/documents/" + id,
+          config.apiurl + config.filedownload + serviceIds + "/documents/" + id,
           headerconfig
         ),
     };
@@ -59,17 +69,18 @@ export default function AServiceDetails(props) {
       setIsEOpen(true);
     }
   };
-  function refreshServicesList() {
+  function refreshServicesList(cp) {
     var m = window.location.pathname.split("/");
-    setServiceId(m[4]);
+    setServiceIds(m[4]);
     applicationAPI()
-      .fetchAll(m[4])
+      .fetchPerPage(cp, perpage, m[4])
       .then(
         (res) => (
-          setServicesList(res.data.documents),
+          calculatepagination(res.data.documents),
+          setUserName(res.data.userName),
           setServiceName(res.data.serviceName),
           setServiceStatus(res.data.status),
-          setUserName(res.data.userName)
+          setServicesList(res.data.documents)
         )
       )
       .catch(function (error) {
@@ -88,23 +99,13 @@ export default function AServiceDetails(props) {
       toggleEPopup();
     }
   };
-  function userFileUpload(e, documentId) {
-    if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0]);
-      const formData = new FormData();
-      formData.append("documentId", documentId);
-      formData.append("userServiceId", serviceId);
-      formData.append("file", e.target.files[0]);
-      uploadData(formData);
-    }
-  }
   function ViewDocument(documentId) {
     var xhr = new XMLHttpRequest();
     xhr.open(
       "GET",
       config.apiurl +
         config.filedownload +
-        serviceId +
+        serviceIds +
         "/documents/" +
         documentId,
       true
@@ -130,7 +131,7 @@ export default function AServiceDetails(props) {
       "GET",
       config.apiurl +
         config.filedownload +
-        serviceId +
+        serviceIds +
         "/documents/" +
         documentId,
       true
@@ -151,25 +152,58 @@ export default function AServiceDetails(props) {
     };
     xhr.send();
   }
-  const uploadData = (formData) => {
+  
+  function GetAllServices() {
     applicationAPI()
-      .uploadFile(formData)
-      .then((res) => {
-        if (res.status == 200) {
-          handleSuccess("File uploaded successfully");
-          refreshServicesList();
-        } else {
-          handleError("Failed to upload file");
-        }
-      })
+      .fetchAll()
+      .then((res) => calculatepagination(res.data.documents))
       .catch(function (error) {
         if (error.response) {
           handleError(error.response.data.message);
         }
       });
-  };
+  }
+  function calculatepagination(DataList) {
+    settotalrecords(DataList.length);
+    setnoofpages(Math.round(DataList.length / perpage));
+  }
+  function updateShowEntries() {
+    return (
+      <div className="col-md-6">
+        <p className="showing-entries">
+          Showing
+          <span>
+            {currentpage} to {noofpages} of {totalrecords}
+          </span>
+          entries
+        </p>
+      </div>
+    );
+  }
+  function updateCurrentPage(e) {
+    setcurrentpage(Number(e.target.id));
+    refreshServicesList(Number(e.target.id));
+  }
+  function updatePagination() {
+    const list = [];
+    for (var i = 0; i < noofpages; i++) {
+      list.push(
+        <li className="page-item active">
+          <Link
+            className="page-link"
+            onClick={(e) => updateCurrentPage(e, i)}
+            id={i}
+          >
+            {Number(i) + 1}
+          </Link>
+        </li>
+      );
+    }
+    return <ul className="pagination justify-content-end">{list}</ul>;
+  }
   useEffect(() => {
-    refreshServicesList();
+    refreshServicesList(currentpage);
+    //GetAllServices();
     ReactTooltip.rebuild();
   }, []);
   return (
@@ -246,7 +280,7 @@ export default function AServiceDetails(props) {
                     </thead>
                     <tbody>
                       {servicesList &&
-                        servicesList.map((document,index) => (
+                        servicesList.map((document, index) => (
                           <tr key={document.id}>
                             <td scope="row" key={document.id}>
                               {index + 1}
@@ -324,25 +358,12 @@ export default function AServiceDetails(props) {
             </div>
             <div className="clearfix" />
             <div className="row mart40">
-              <div className="col-md-6">
-                <p className="showing-entries">
-                  Showing <span> 1 to 1 of 1</span> entries
-                </p>
-              </div>
+              {updateShowEntries()}
               <div className="col-md-6">
                 <div className="list-box-p">
                   <div className="pagination-list-box">
                     <ul className="pagination justify-content-end">
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          <i className="fa  fa-caret-left" />
-                        </a>
-                      </li>
-                      <li className="page-item active">
-                        <a className="page-link" href="javascript:void(0);">
-                          1
-                        </a>
-                      </li>
+                      {updatePagination()}
                     </ul>
                   </div>
                 </div>
@@ -366,11 +387,14 @@ export default function AServiceDetails(props) {
       {isOpen && (
         <ConversationModal
           handleClose={togglePopup}
-          userServiceId={serviceId}
+          userServiceId={serviceIds}
         />
       )}
       {isEOpen && (
-        <ExecutiveModal handleEClose={toggleEPopup} userServiceId={serviceId} />
+        <ExecutiveModal
+          handleEClose={toggleEPopup}
+          userServiceId={serviceIds}
+        />
       )}
     </div>
   );
