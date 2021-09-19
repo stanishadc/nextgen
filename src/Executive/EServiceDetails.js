@@ -19,6 +19,8 @@ export default function EServiceDetails(props) {
   const [perpage, setperpage] = useState(10);
   const [totalrecords, settotalrecords] = useState(0);
   const [noofpages, setnoofpages] = useState(0);
+  const [serviceStatus, setServiceStatus] = useState(null);
+  
   const applicationAPI = () => {
     const headerconfig = {
       headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
@@ -45,7 +47,7 @@ export default function EServiceDetails(props) {
   const togglePopup = () => {
     setIsOpen(!isOpen);
   };
-  function refreshServicesList() {
+  function refreshServicesList(cp) {
      var m = window.location.pathname.split("/");
     setServiceIds(m[4]);
     applicationAPI()
