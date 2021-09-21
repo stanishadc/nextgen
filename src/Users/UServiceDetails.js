@@ -149,8 +149,10 @@ export default function UServiceDetails(props) {
   }
   useEffect(() => {
     refreshServicesList();
-    ReactTooltip.rebuild();
   }, []);
+  useEffect(() => {
+    ReactTooltip.rebuild();
+  });
   return (
     <div>
       <Header></Header>
