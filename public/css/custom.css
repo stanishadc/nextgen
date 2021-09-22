@@ -985,7 +985,9 @@ button:focus{outline: none;}
 .go-age-box input {
     width: 29px;
     height: 29px;
-    padding: 5px;
+    padding: 8px;
+    margin-left: 5px;
+    margin-right: 5px;
     border: 1px solid #13b59c;
 }
 
