@@ -29,15 +29,18 @@ export default function AServiceDetails(props) {
   const [perpage, setperpage] = useState(10);
   const [totalrecords, settotalrecords] = useState(0);
   const [noofpages, setnoofpages] = useState(0);
-
+  const [indexPage, setIndexPage] = useState(0);
+  const [firstPage, setFirstPage] = useState(false);
+  const [lastPage, setLastPage] = useState(false);
+  const [goPage, setGoPage] = useState(0);
   const applicationAPI = () => {
     const headerconfig = {
       headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
     };
     return {
-      fetchAll: () =>
+      fetchAll: (sId) =>
         axios.get(
-          config.apiurl + config.getuserservice + serviceIds,
+          config.apiurl + config.getuserservice + sId,
           headerconfig
         ),
       fetchPerPage: (cp, pp, sId) =>
@@ -76,11 +79,10 @@ export default function AServiceDetails(props) {
       .fetchPerPage(cp, perpage, m[4])
       .then(
         (res) => (
-          calculatepagination(res.data.documents),
-          setUserName(res.data.userName),
-          setServiceName(res.data.serviceName),
-          setServiceStatus(res.data.status),
-          setServicesList(res.data.documents)
+          setUserName(res.data.service.userName),
+          setServiceName(res.data.service.serviceName),
+          setServiceStatus(res.data.service.status),
+          setServicesList(res.data.service.documents)
         )
       )
       .catch(function (error) {
@@ -152,11 +154,13 @@ export default function AServiceDetails(props) {
     };
     xhr.send();
   }
-  
+
   function GetAllServices() {
+    var m = window.location.pathname.split("/");
+    setServiceIds(m[4]);
     applicationAPI()
-      .fetchAll()
-      .then((res) => calculatepagination(res.data.documents))
+      .fetchAll(m[4])
+      .then((res) => calculatepagination(res.data.service.documents))
       .catch(function (error) {
         if (error.response) {
           handleError(error.response.data.message);
@@ -165,7 +169,26 @@ export default function AServiceDetails(props) {
   }
   function calculatepagination(DataList) {
     settotalrecords(DataList.length);
-    setnoofpages(Math.round(DataList.length / perpage));
+    var dt = DataList.length / perpage;
+    if (dt % 1 != 0) {
+      if (dt > 1) {
+        setnoofpages(Math.round(DataList.length / perpage) + 1);
+      } else {
+        setnoofpages(Math.round(DataList.length / perpage));
+      }
+    } else {
+      setnoofpages(Math.round(DataList.length / perpage));
+    }
+    if (currentpage > 0) {
+      setFirstPage(true);
+    } else {
+      setFirstPage(false);
+    }
+    if (currentpage < noofpages - 1) {
+      setLastPage(true);
+    } else {
+      setLastPage(false);
+    }
   }
   function updateShowEntries() {
     return (
@@ -173,16 +196,13 @@ export default function AServiceDetails(props) {
         <p className="showing-entries">
           Showing
           <span>
+            &nbsp;
             {currentpage} to {noofpages} of {totalrecords}
           </span>
-          entries
+          &nbsp; entries
         </p>
       </div>
     );
-  }
-  function updateCurrentPage(e) {
-    setcurrentpage(Number(e.target.id));
-    refreshServicesList(Number(e.target.id));
   }
   function updatePagination() {
     const list = [];
@@ -191,7 +211,7 @@ export default function AServiceDetails(props) {
         <li className="page-item active">
           <Link
             className="page-link"
-            onClick={(e) => updateCurrentPage(e, i)}
+            onClick={(e) => updateCurrentPage(e)}
             id={i}
           >
             {Number(i) + 1}
@@ -199,14 +219,72 @@ export default function AServiceDetails(props) {
         </li>
       );
     }
-    return <ul className="pagination justify-content-end">{list}</ul>;
+    return (
+      <ul className="pagination justify-content-end">
+        {firstPage == true ? (
+          <li className="page-item">
+            <Link className="page-link" onClick={(e) => updatePreviousPage(e)}>
+              <i className="fa  fa-caret-left" />
+            </Link>
+          </li>
+        ) : null}
+        {list}
+        {lastPage == true ? (
+          <li className="page-item">
+            <Link className="page-link" onClick={(e) => updateNextPage(e, i)}>
+              <i className="fa  fa-caret-right" />
+            </Link>
+          </li>
+        ) : null}
+      </ul>
+    );
   }
+  function updateCurrentPage(e) {
+    if (e.target.id > 0) {
+      setFirstPage(true);
+    } else {
+      setFirstPage(false);
+    }
+    if (e.target.id < noofpages - 1) {
+      setLastPage(true);
+    } else {
+      setLastPage(false);
+    }
+    setIndexPage(perpage * Number(e.target.id));
+    setcurrentpage(Number(e.target.id));
+    refreshServicesList(Number(e.target.id));
+  }
+  function updatePreviousPage(e) {
+    if (currentpage > 0) {
+      setFirstPage(true);
+    } else {
+      setFirstPage(false);
+    }
+    setIndexPage(perpage * Number(currentpage - 1));
+    setcurrentpage(Number(currentpage - 1));
+    refreshServicesList(Number(currentpage - 1));
+  }
+  function updateNextPage(e) {
+    setIndexPage(perpage * Number(currentpage + 1));
+    setcurrentpage(Number(currentpage + 1));
+    refreshServicesList(Number(currentpage + 1));
+  }
+  function updateGoPage(pNo) {
+    setIndexPage(perpage * Number(pNo));
+    setcurrentpage(Number(pNo));
+    refreshServicesList(Number(pNo));
+  }
+  function updateInput(event) {
+    setGoPage(event.target.value);
+  }
+  useEffect(() => {
+    GetAllServices();
+    ReactTooltip.rebuild();
+  });
   useEffect(() => {
     refreshServicesList(currentpage);
   }, []);
-  useEffect(() => {
-    ReactTooltip.rebuild();
-  });
+  
   return (
     <div>
       <Header></Header>
@@ -284,7 +362,9 @@ export default function AServiceDetails(props) {
                         servicesList.map((document, index) => (
                           <tr key={document.id}>
                             <td scope="row" key={document.id}>
-                              {index + 1}
+                              {currentpage == 0
+                                ? index + 1
+                                : indexPage + index + 1}
                             </td>
                             <td>{document.documentId}</td>
                             <td>
@@ -366,6 +446,26 @@ export default function AServiceDetails(props) {
                     <ul className="pagination justify-content-end">
                       {updatePagination()}
                     </ul>
+                  </div>
+                  <div className="pagination-list-box">
+                    <div className="go-age-box">
+                      <small>Go page</small>
+                      <input
+                        type="text"
+                        value={goPage}
+                        onChange={(e) => updateInput(e)}
+                      />
+                      <Link
+                        onClick={(e) => updateGoPage(goPage)}
+                        style={{ color: "#000", fontWeight: 700 }}
+                      >
+                        Go
+                        <i
+                          className="fa  fa-caret-right"
+                          style={{ verticalAlign: "middle", marginLeft: "5px" }}
+                        />
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>

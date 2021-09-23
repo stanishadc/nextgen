@@ -15,6 +15,14 @@ export default function UServiceDetails(props) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [serviceStatus, setServiceStatus] = useState(null);
   const [serviceIds, setServiceIds] = useState(null);
+  const [currentpage, setcurrentpage] = useState(0);
+  const [perpage, setperpage] = useState(10);
+  const [totalrecords, settotalrecords] = useState(0);
+  const [noofpages, setnoofpages] = useState(0);
+  const [indexPage, setIndexPage] = useState(0);
+  const [firstPage, setFirstPage] = useState(false);
+  const [lastPage, setLastPage] = useState(false);
+  const [goPage, setGoPage] = useState(0);
   const applicationAPI = () => {
     const headerconfig = {
       headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
@@ -26,9 +34,17 @@ export default function UServiceDetails(props) {
       },
     };
     return {
-      fetchAll: (serviceId) =>
+      fetchAll: (sId) =>
         axios.get(
-          config.apiurl + config.getuserservice + serviceId,
+          config.apiurl + config.getuserservice + sId,
+          headerconfig
+        ),
+        fetchPerPage: (cp, pp, sId) =>
+        axios.get(
+          config.apiurl +
+            config.getuserservice +
+            sId +
+            `?pageNo=${cp}&pageSize=${pp}`,
           headerconfig
         ),
       uploadFile: (id, serviceId, newRecord) =>
@@ -117,7 +133,7 @@ export default function UServiceDetails(props) {
       .then((res) => {
         if (res.status == 200) {
           handleSuccess("File uploaded successfully");
-          refreshServicesList();
+          refreshServicesList(currentpage);
         } else {
           handleError("Failed to upload file");
         }
@@ -129,16 +145,16 @@ export default function UServiceDetails(props) {
       });
   };
 
-  function refreshServicesList() {
+  function refreshServicesList(cp) {
     var m = window.location.pathname.split("/");
     setServiceIds(m[4]);
     applicationAPI()
-      .fetchAll(m[4])
+      .fetchPerPage(cp, perpage, m[4])
       .then(
         (res) => (
-          setServicesList(res.data.documents),
-          setServiceName(res.data.serviceName),
-          setServiceStatus(res.data.enableMarkAsDone)
+          setServiceName(res.data.service.serviceName),
+          setServiceStatus(res.data.service.status),
+          setServicesList(res.data.service.documents)
         )
       )
       .catch(function (error) {
@@ -147,12 +163,135 @@ export default function UServiceDetails(props) {
         }
       });
   }
+  function GetAllServices() {
+    var m = window.location.pathname.split("/");
+    setServiceIds(m[4]);
+    applicationAPI()
+      .fetchAll(m[4])
+      .then((res) => calculatepagination(res.data.service.documents))
+      .catch(function (error) {
+        if (error.response) {
+          handleError(error.response.data.message);
+        }
+      });
+  }
+  function calculatepagination(DataList) {
+    settotalrecords(DataList.length);
+    var dt = DataList.length / perpage;
+    if (dt % 1 != 0) {
+      if (dt > 1) {
+        setnoofpages(Math.round(DataList.length / perpage) + 1);
+      } else {
+        setnoofpages(Math.round(DataList.length / perpage));
+      }
+    } else {
+      setnoofpages(Math.round(DataList.length / perpage));
+    }
+    if (currentpage > 0) {
+      setFirstPage(true);
+    } else {
+      setFirstPage(false);
+    }
+    if (currentpage < noofpages - 1) {
+      setLastPage(true);
+    } else {
+      setLastPage(false);
+    }
+  }
+  function updateShowEntries() {
+    return (
+      <div className="col-md-6">
+        <p className="showing-entries">
+          Showing
+          <span>
+            &nbsp;
+            {currentpage} to {noofpages} of {totalrecords}
+          </span>
+          &nbsp; entries
+        </p>
+      </div>
+    );
+  }
+  function updatePagination() {
+    const list = [];
+    for (var i = 0; i < noofpages; i++) {
+      list.push(
+        <li className="page-item active">
+          <Link
+            className="page-link"
+            onClick={(e) => updateCurrentPage(e)}
+            id={i}
+          >
+            {Number(i) + 1}
+          </Link>
+        </li>
+      );
+    }
+    return (
+      <ul className="pagination justify-content-end">
+        {firstPage == true ? (
+          <li className="page-item">
+            <Link className="page-link" onClick={(e) => updatePreviousPage(e)}>
+              <i className="fa  fa-caret-left" />
+            </Link>
+          </li>
+        ) : null}
+        {list}
+        {lastPage == true ? (
+          <li className="page-item">
+            <Link className="page-link" onClick={(e) => updateNextPage(e, i)}>
+              <i className="fa  fa-caret-right" />
+            </Link>
+          </li>
+        ) : null}
+      </ul>
+    );
+  }
+  function updateCurrentPage(e) {
+    if (e.target.id > 0) {
+      setFirstPage(true);
+    } else {
+      setFirstPage(false);
+    }
+    if (e.target.id < noofpages - 1) {
+      setLastPage(true);
+    } else {
+      setLastPage(false);
+    }
+    setIndexPage(perpage * Number(e.target.id));
+    setcurrentpage(Number(e.target.id));
+    refreshServicesList(Number(e.target.id));
+  }
+  function updatePreviousPage(e) {
+    if (currentpage > 0) {
+      setFirstPage(true);
+    } else {
+      setFirstPage(false);
+    }
+    setIndexPage(perpage * Number(currentpage - 1));
+    setcurrentpage(Number(currentpage - 1));
+    refreshServicesList(Number(currentpage - 1));
+  }
+  function updateNextPage(e) {
+    setIndexPage(perpage * Number(currentpage + 1));
+    setcurrentpage(Number(currentpage + 1));
+    refreshServicesList(Number(currentpage + 1));
+  }
+  function updateGoPage(pNo) {
+    setIndexPage(perpage * Number(pNo));
+    setcurrentpage(Number(pNo));
+    refreshServicesList(Number(pNo));
+  }
+  function updateInput(event) {
+    setGoPage(event.target.value);
+  }
   useEffect(() => {
-    refreshServicesList();
-  }, []);
-  useEffect(() => {
+    GetAllServices();
     ReactTooltip.rebuild();
   });
+  useEffect(() => {
+    refreshServicesList(currentpage);
+  }, []);
   return (
     <div>
       <Header></Header>
@@ -218,8 +357,8 @@ export default function UServiceDetails(props) {
                       </tr>
                     </thead>
                     <tbody>
-                    {servicesList &&
-                      servicesList.map((document, index) => (                        
+                      {servicesList &&
+                        servicesList.map((document, index) => (
                           <tr key={document.id}>
                             <td scope="row">{index + 1}</td>
                             <td>{document.documentId}</td>
@@ -308,34 +447,41 @@ export default function UServiceDetails(props) {
                               )}
                             </td>
                           </tr>
-                      ))}
-                      </tbody>
+                        ))}
+                    </tbody>
                   </table>
                 </div>
               </div>
             </div>
             <div className="clearfix" />
             <div className="row mart40">
-              <div className="col-md-6">
-                <p className="showing-entries">
-                  Showing <span> 1 to 1 of 1</span> entries
-                </p>
-              </div>
+              {updateShowEntries()}
               <div className="col-md-6">
                 <div className="list-box-p">
                   <div className="pagination-list-box">
                     <ul className="pagination justify-content-end">
-                      <li className="page-item">
-                        <a className="page-link" href="javascript:void(0);">
-                          <i className="fa  fa-caret-left" />
-                        </a>
-                      </li>
-                      <li className="page-item active">
-                        <a className="page-link" href="javascript:void(0);">
-                          1
-                        </a>
-                      </li>
+                      {updatePagination()}
                     </ul>
+                  </div>
+                  <div className="pagination-list-box">
+                    <div className="go-age-box">
+                      <small>Go page</small>
+                      <input
+                        type="text"
+                        value={goPage}
+                        onChange={(e) => updateInput(e)}
+                      />
+                      <Link
+                        onClick={(e) => updateGoPage(goPage)}
+                        style={{ color: "#000", fontWeight: 700 }}
+                      >
+                        Go
+                        <i
+                          className="fa  fa-caret-right"
+                          style={{ verticalAlign: "middle", marginLeft: "5px" }}
+                        />
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
