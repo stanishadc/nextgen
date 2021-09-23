@@ -182,7 +182,9 @@ export default function UServices(props) {
                         servicesList.map((service, index) => (
                           <tr>
                             <td scope="row" key={service.id}>
-                              {index+1}
+                              {currentpage == 0
+                                ? index + 1
+                                : indexPage + index + 1}
                             </td>
                             <td>{service.serviceCode}</td>
                             <td>{service.serviceName}</td>

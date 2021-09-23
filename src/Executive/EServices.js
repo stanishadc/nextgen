@@ -212,10 +212,12 @@ export default function EServices(props) {
                     </thead>
                     <tbody>
                       {servicesList &&
-                        servicesList.filter((servicesList) => servicesList.executiveId == localStorage.getItem('userId')).map((service) => (
-                          <tr>
-                            <td scope="row" key={service.id}>
-                              1
+                        servicesList.filter((servicesList) => servicesList.executiveId == localStorage.getItem('userId')).map((service,index) => (
+                          <tr key={service.id}>
+                            <td scope="row">
+                             {currentpage == 0
+                                ? index + 1
+                                : indexPage + index + 1}
                             </td>
                             <td>{service.serviceCode}</td>
                             <td>{service.serviceName}</td>

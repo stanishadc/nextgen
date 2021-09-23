@@ -386,7 +386,9 @@ useEffect(() => {
                         servicesList.map((document, index) => (
                           <tr key={document.id}>
                             <td scope="row" key={document.id}>
-                              {index + 1}
+                               {currentpage == 0
+                                ? index + 1
+                                : indexPage + index + 1}
                             </td>
                             <td>{document.documentId}</td>
                             <td>

@@ -360,7 +360,9 @@ export default function UServiceDetails(props) {
                       {servicesList &&
                         servicesList.map((document, index) => (
                           <tr key={document.id}>
-                            <td scope="row">{index + 1}</td>
+                            <td scope="row"> {currentpage == 0
+                                ? index + 1
+                                : indexPage + index + 1}</td>
                             <td>{document.documentId}</td>
                             <td>
                               {document.fileName ? (
