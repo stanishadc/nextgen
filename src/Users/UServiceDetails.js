@@ -14,6 +14,7 @@ export default function UServiceDetails(props) {
   const [serviceName, setServiceName] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [serviceStatus, setServiceStatus] = useState(null);
+  const [markStatus, setMarkStatus] = useState(null);
   const [serviceIds, setServiceIds] = useState(null);
   const [currentpage, setcurrentpage] = useState(0);
   const [perpage, setperpage] = useState(10);
@@ -58,6 +59,12 @@ export default function UServiceDetails(props) {
           config.apiurl + config.filedownload + serviceId + "/documents/" + id,
           fileHeaderconfig
         ),
+      updateETaskStatus: (updateData) =>
+        axios.put(
+          config.apiurl + config.updateservice + serviceIds,
+          updateData,
+          headerconfig
+        )
     };
   };
   const togglePopup = () => {
@@ -154,6 +161,7 @@ export default function UServiceDetails(props) {
         (res) => (
           setServiceName(res.data.service.serviceName),
           setServiceStatus(res.data.service.status),
+          setMarkStatus(res.data.service.enableMarkAsDone),
           setServicesList(res.data.service.documents)
         )
       )
@@ -163,6 +171,26 @@ export default function UServiceDetails(props) {
         }
       });
   }
+  const UpdateTaskStatus = (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("status", "COMPLETED");
+    formData.append("serviceId", serviceIds);
+    updateService(formData);
+  };
+  const updateService = (formData) => {
+    applicationAPI()
+      .updateETaskStatus(formData)
+      .then((res) => {
+        handleSuccess("Successfully Submitted");
+        props.handleEClose();
+      })
+      .catch(function (error) {
+        if (error.response) {
+          handleError(error.response.data.message);
+        }
+      });
+  };
   function GetAllServices() {
     var m = window.location.pathname.split("/");
     setServiceIds(m[4]);
@@ -324,8 +352,8 @@ export default function UServiceDetails(props) {
                 </div>
               </div>
               <div className="col-md-4">
-                {serviceStatus === true ? (
-                  <Link className="sort-btn active">
+                {markStatus === true ? (
+                  <Link className="sort-btn active" onClick={UpdateTaskStatus}>
                     <img src="/images/checked.png" /> Mark As Done
                   </Link>
                 ) : null}
